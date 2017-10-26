@@ -72,6 +72,9 @@ def _load_from_mnist_files(data_dir):
     test_images = _read_mnist_images(os.path.join(data_dir, 't10k-images-idx3-ubyte.gz'))
     test_labels = _read_mnist_labels(os.path.join(data_dir, 't10k-labels-idx1-ubyte.gz'))
 
+    train_images = train_images.reshape(60000, 784)
+    test_images = test_images.reshape(10000, 784)
+
     np.save(os.path.join(data_dir, 'train-images.npy'), train_images)
     np.save(os.path.join(data_dir, 'train-labels.npy'), train_labels)
     np.save(os.path.join(data_dir, 'test-images.npy'), test_images)
@@ -90,8 +93,13 @@ def load_mnist_data():
 
     try:
         print('Trying to load MNIST dataset from numpy files...')
-        return _load_from_numpy_files(mnist_dir)
+        mnist = _load_from_numpy_files(mnist_dir)
     except IOError:
         print('Numpy files with MNIST dataset not found.')
         print('Trying to load MNIST dataset from raw MNIST files (takes about a minute)...')
-        return _load_from_mnist_files(mnist_dir)
+        mnist = _load_from_mnist_files(mnist_dir)
+    finally:
+        print('Successfully loaded MNIST dataset.')
+        return mnist
+
+

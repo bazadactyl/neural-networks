@@ -49,10 +49,40 @@ class FFNet:
         # final = multiply((x-y),_activate(x, inverse=True))
         pass
 
+    def train_network(self, images, labels, learn_rate=2.0, epochs=50, batch_size=100):
+        images = images.T
+        labels = labels.T[0]
+        num_images = images.shape[1]
+
+        for epoch in range(epochs):
+            # Permute the images for each epoch (yields better results)
+            images = images.T
+            np.random.shuffle(images)  # shuffle rows
+            images = images.T
+
+            # Split the images into batches (makes training faster)
+            batches = []
+            num_batches = int(num_images / batch_size)
+            for i in range(num_batches):
+                first = i * batch_size
+                last = first + batch_size
+                batch = np.array([row[first:last] for row in images])
+                batches.append(batch)
+
+            # Feed forward
+            print('Hello')
+
+            # Compute corrections
+            print('Hello')
+
+            # Backpropagate
+            print('Hello')
+
 
 def main():
     train_images, train_labels, test_images, test_labels = load_mnist_data()
     net = FFNet()
+    net.train_network(train_images, train_labels)
 
 
 if __name__ == '__main__':
