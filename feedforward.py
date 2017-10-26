@@ -18,12 +18,50 @@ class FFNet:
         self._num_layers = len(self._arch)
         self._init_w()
         self._init_b()
+        self.train_inputs = None
+        self.train_targets = None
+        self.training_set_size = 0
+        self.input_batches = None
+        self.target_batches = None
 
     def _init_w(self, low=0, high=1):
         self._w = [np.random.normal(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
 
     def _init_b(self, low=0, high=1):
         self._b = [np.random.normal(low, high, size=(i, 1)) for i in self._arch[1:]]
+
+    def _prepare_train_inputs(self, images):
+        """Arrange the inputs such that each column respresents the pixels of one image."""
+        self.train_inputs = images.T
+        self.training_set_size = self.train_inputs.shape[1]
+
+    def _prepare_train_targets(self, labels):
+        """Arrange the targets such that each column represents the desired output for an image."""
+        labels = labels.T[0]
+        self.train_targets = np.zeros((10, self.training_set_size))
+        for i, label in enumerate(labels):
+            self.train_targets[label][i] = 1
+
+    def _shuffle_training_set(self):
+        """Permute the inputs. Yields better results during training."""
+        permutation = np.random.permutation(self.training_set_size)
+        self.train_inputs = self.train_inputs.T[permutation].T
+        self.train_targets = self.train_targets.T[permutation].T
+
+    def _batch_training_data(self, batch_size):
+        num_images = self.train_inputs.shape[1]
+        num_batches = int(num_images / batch_size)
+
+        self.input_batches = []
+        self.target_batches = []
+
+        for i in range(num_batches):
+            start = i * batch_size
+            end = start + batch_size
+            input_batch = np.array([row[start:end] for row in self.train_inputs])
+            self.input_batches.append(input_batch)
+            target_batch = np.array([row[start:end] for row in self.train_targets])
+            self.target_batches.append(target_batch)
 
     def _activate(self, z):
         return sigmoid(z)
@@ -49,28 +87,16 @@ class FFNet:
         # final = multiply((x-y),_activate(x, inverse=True))
         pass
 
-    def train_network(self, images, labels, learn_rate=2.0, epochs=50, batch_size=100):
-        images = images.T
-        labels = labels.T[0]
-        num_images = images.shape[1]
+    def train_network(self, train_images, train_labels, learn_rate=2.0, epochs=50, batch_size=100):
+        self._prepare_train_inputs(train_images)
+        self._prepare_train_targets(train_labels)
 
         for epoch in range(epochs):
-            # Permute the images for each epoch (yields better results)
-            images = images.T
-            np.random.shuffle(images)  # shuffle rows
-            images = images.T
+            self._shuffle_training_set()
+            self._batch_training_data(batch_size)
 
-            # Split the images into batches (makes training faster)
-            batches = []
-            num_batches = int(num_images / batch_size)
-            for i in range(num_batches):
-                first = i * batch_size
-                last = first + batch_size
-                batch = np.array([row[first:last] for row in images])
-                batches.append(batch)
-
-            # Feed forward
-            print('Hello')
+            for input_batch, target_batch in zip(self.input_batches, self.target_batches):
+                self._feed_forward(input_batch)
 
             # Compute corrections
             print('Hello')

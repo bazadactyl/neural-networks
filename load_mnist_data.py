@@ -101,5 +101,3 @@ def load_mnist_data():
     finally:
         print('Successfully loaded MNIST dataset.')
         return mnist
-
-
