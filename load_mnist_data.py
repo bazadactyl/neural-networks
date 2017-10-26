@@ -1,5 +1,4 @@
 import gzip
-import multiprocessing
 import os
 from struct import unpack
 import numpy as np
@@ -8,8 +7,9 @@ CHUNK = 4  # bytes
 NUMBER = 1  # bytes
 
 
-def read_mnist_images(file_path):
-    """This function was inspired by code we saw in https://github.com/hdmetor/NeuralNetwork
+def _read_mnist_images(file_path):
+    """This function was inspired by code we saw in
+    https://github.com/hdmetor/NeuralNetwork/blob/master/data_load.py
 
     :param file_path: gun-zipped file of MNIST images
     :return: array of image data
@@ -33,8 +33,9 @@ def read_mnist_images(file_path):
     return images
 
 
-def read_mnist_labels(file_path):
-    """This function was inspired by code we saw in https://github.com/hdmetor/NeuralNetwork
+def _read_mnist_labels(file_path):
+    """This function was inspired by code we saw in
+    https://github.com/hdmetor/NeuralNetwork/blob/master/data_load.py
 
     :param file_path: gun-zipped file of MNIST images
     :return: array of image data
@@ -54,7 +55,7 @@ def read_mnist_labels(file_path):
     return labels
 
 
-def load_mnist_from_numpy_files(data_dir):
+def _load_from_numpy_files(data_dir):
     """Load the MNIST dataset from numpy files created in a previous run."""
     train_images = np.load(os.path.join(data_dir, 'train-images.npy'))
     train_labels = np.load(os.path.join(data_dir, 'train-labels.npy'))
@@ -64,12 +65,12 @@ def load_mnist_from_numpy_files(data_dir):
     return train_images, train_labels, test_images, test_labels
 
 
-def load_mnist_from_mnist_files(data_dir):
+def _load_from_mnist_files(data_dir):
     """Load the MNIST dataset from the original MNIST files."""
-    train_images = read_mnist_images(os.path.join(data_dir, 'train-images-idx3-ubyte.gz'))
-    train_labels = read_mnist_labels(os.path.join(data_dir, 'train-labels-idx1-ubyte.gz'))
-    test_images = read_mnist_images(os.path.join(data_dir, 't10k-images-idx3-ubyte.gz'))
-    test_labels = read_mnist_labels(os.path.join(data_dir, 't10k-labels-idx1-ubyte.gz'))
+    train_images = _read_mnist_images(os.path.join(data_dir, 'train-images-idx3-ubyte.gz'))
+    train_labels = _read_mnist_labels(os.path.join(data_dir, 'train-labels-idx1-ubyte.gz'))
+    test_images = _read_mnist_images(os.path.join(data_dir, 't10k-images-idx3-ubyte.gz'))
+    test_labels = _read_mnist_labels(os.path.join(data_dir, 't10k-labels-idx1-ubyte.gz'))
 
     np.save(os.path.join(data_dir, 'train-images.npy'), train_images)
     np.save(os.path.join(data_dir, 'train-labels.npy'), train_labels)
@@ -89,8 +90,8 @@ def load_mnist_data():
 
     try:
         print('Trying to load MNIST dataset from numpy files...')
-        return load_mnist_from_numpy_files(mnist_dir)
+        return _load_from_numpy_files(mnist_dir)
     except IOError:
         print('Numpy files with MNIST dataset not found.')
-        print('Trying to load MNIST dataset from raw MNIST files...')
-        return load_mnist_from_mnist_files(mnist_dir)
+        print('Trying to load MNIST dataset from raw MNIST files (takes about a minute)...')
+        return _load_from_mnist_files(mnist_dir)

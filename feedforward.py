@@ -3,12 +3,12 @@ from load_mnist_data import load_mnist_data
 
 
 def sigmoid(x, inverse=False):
-    sigmoid_result = 1 / (1 + np.exp(-x))
+    result = 1 / (1 + np.exp(-x))
 
     if not inverse:
-        return sigmoid_result
+        return result
     else:
-        return sigmoid_result - (1 - sigmoid_result)
+        return result - (1 - result)
 
 
 class FFNet:
