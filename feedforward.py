@@ -52,9 +52,11 @@ class FFNet:
             input x '''
         self._a = []
         self._o = []
+        self._a.append(x)
+        self._o.append(x)
         tmp = x
 
-        for l in range(self._num_layers - 1):
+        for l in range(self._num_layers-1):
             tmp = self._calculate_z(tmp, l)
             self._o.append(tmp)
             tmp = self._activate(tmp)
@@ -73,9 +75,9 @@ class FFNet:
         self._d.append(out_d)
 
         ''' Calculating the gradient for all layers l = 0 ... n-1 '''
-        for l in range(self._num_layers-2, 0, -1):
-            d = np.multiply(np.dot((self._w[l]).T, self._d[l-2]), 
-                            sigmoid(self._o[l-1], inverse=True))
+        for l in range(self._num_layers-2):
+            d = np.multiply(np.dot((self._w[-(l+1)]).T, self._d[l]),
+                            sigmoid(self._o[-(l+2)], inverse=True))
             self._d.append(d)
 
         ''' Reversal of the list of gradients '''
@@ -153,11 +155,26 @@ class FFNet:
 
 
 def main():
-    train_images, train_labels, test_images, test_labels = load_mnist_data()
-    train_labels
+    train_X, train_y, test_X, test_y = load_mnist_data()
+
+    # Testing variables
+    x = np.random.normal(0,1,size=(784,1))
+    y = np.array((0,0,0,0,1,0,0,0,0,0)).reshape(10,1)
+    
+    # Test
     net = FFNet()
+    a,o = net._propagate(x)
+    d = net._backpropagate(y)
+    net._adjust_weights()
+    net._adjust_biases()
 
+    print("Activation and Output shapes: ")
+    for i in range(4):
+        print(a[i].shape,o[i].shape)
 
+    print("Delta shapes: ")
+    for i in range(3):
+        print(d[i].shape)
 
 if __name__ == '__main__':
     main()
