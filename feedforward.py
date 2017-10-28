@@ -1,5 +1,4 @@
 import numpy as np
-import sklearn as sk
 from load_mnist_data import load_mnist_data
 
 
@@ -13,7 +12,7 @@ def sigmoid(x, inverse=False):
 
 
 class FFNet:
-    def __init__(self, arch=np.array([784, 40, 20, 10]), lr=0.1, batch_size=128):
+    def __init__(self, arch=np.array([784, 40, 20, 10]), lr=0.5, batch_size=128):
         self._arch = arch
         self._batch_size = batch_size
         self._lr = lr
@@ -168,14 +167,14 @@ class FFNet:
             print('Hello')
 
 
-    def test_network(self, test_set, test_labels):
-        records = numpy.zeros((test_set.shape[0],1))
+    def test_network(self, test_input, test_labels):
+        acc = []
 
-        for i,x,y in zip(records, test_input, test_labels):
+        for x,y in zip(test_input, test_labels):
             if np.argmax(self._propagate(x, return_label=True)) == y:
-                records[i] = 1
+                acc.append(1)
 
-        return records.count(1)/records.shape[0]
+        return float(len(acc))/float(test_input.shape[0])
 
 
 def main():
@@ -185,22 +184,28 @@ def main():
     train_X, train_y, test_X, test_y = load_mnist_data()
     train_X = train_X.reshape(60000,784,1)
     test_X = test_X.reshape(10000,784,1)
-    y = net._prepare_y(train_y)
+    train_y_onehot = net._prepare_y(train_y)
 
-    for i in range(net._batch_size):
-        a,o = net._propagate(train_X[i])
-        d = net._backpropagate(y[i])
-        net._adjust_weights()
-        net._adjust_biases()
+    iterations = (train_X.shape[0] - (train_X.shape[0] % net._batch_size))/net._batch_size
 
-    # Sanity check
-    print("Activation and Output shapes: ")
-    for i in range(4):
-        print(a[i].shape,o[i].shape)
+    c = 0
+    epochs = 50
 
-    print("Delta shapes: ")
-    for i in range(3):
-        print(d[i].shape)
+    pre_accuracy = net.test_network(test_X, test_y)*100
+    print("[INFO]: Testing accuracy pre-training: %f" % pre_accuracy)
+
+    for e in range(epochs):
+        for i in range(int(iterations)):
+            for x,y in zip(train_X[(net._batch_size*i):(net._batch_size*(i+1))],
+                        train_y_onehot[(net._batch_size*i):(net._batch_size*(i+1))]):
+                a,o = net._propagate(x)
+                d = net._backpropagate(y)
+                net._adjust_weights()
+                net._adjust_biases()
+        
+        acc = net.test_network(test_X, test_y)*100
+        print("[INFO]: Epoch %d, Training Accuracy: %f" % (e, acc))
+
 
 if __name__ == '__main__':
     main()
