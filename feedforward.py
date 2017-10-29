@@ -12,6 +12,20 @@ def sigmoid(x, inverse=False):
         return result * (1 - result)
 
 
+def hyperbolic_tangent(x, inverse=False):
+    if not inverse:
+        return np.tanh(x)
+    else:
+        return 1 - x * x
+
+
+def softmax(x):
+    """Compute softmax values for each sets of scores in x."""
+    e_x = np.exp(x - np.max(x))
+    result = e_x / e_x.sum(axis=0)
+    return result
+
+
 class FeedForwardNetwork:
     def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=300):
         self._arch = arch
@@ -49,10 +63,18 @@ class FeedForwardNetwork:
         self._o.append(x)
         tmp = x
 
-        for l in range(self._num_layers-1):
-            tmp = self._calculate_z(tmp, l)
+        num_neuron_layers = self._num_layers - 1
+        output_layer = num_neuron_layers - 1
+
+        for layer in range(num_neuron_layers):
+            if layer == output_layer:
+                activate = softmax
+            else:
+                activate = sigmoid
+
+            tmp = self._calculate_z(tmp, layer)
             self._o.append(tmp)
-            tmp = sigmoid(tmp)
+            tmp = activate(tmp)
             self._a.append(tmp)
 
         if return_label:
@@ -64,18 +86,27 @@ class FeedForwardNetwork:
         """ Propagate error signal backward from output layer """
         self._d = []
 
+        ''' Pick activation functions for hidden and output layers '''
+        output_layer_activate = softmax
+        hidden_layer_activate = sigmoid
+
         ''' Calculating the gradient for the output layer l = n '''
-        out_d = np.multiply(
-            self._a[-1] - y,
-            sigmoid(self._o[-1], inverse=True)
-        )
+        if output_layer_activate == sigmoid:
+            out_d = np.multiply(
+                self._a[-1] - y,
+                output_layer_activate(self._o[-1], inverse=True)
+            )
+        elif output_layer_activate == softmax:
+            out_d = self._a[-1] - y
+
         self._d.append(out_d)
 
         ''' Calculating the gradient for all layers l = 0 ... n-1 '''
-        for l in range(self._num_layers-2):
+        num_hidden_layers = self._num_layers - 2
+        for l in range(num_hidden_layers):
             weights_l = (self._w[-(l+1)]).T
             delta_l = self._d[l]
-            d = np.multiply(np.dot(weights_l, delta_l), sigmoid(self._o[-(l+2)], inverse=True))
+            d = np.multiply(np.dot(weights_l, delta_l), hidden_layer_activate(self._o[-(l+2)], inverse=True))
             self._d.append(d)
 
         ''' Reversal of the list of gradients '''
@@ -196,7 +227,7 @@ def main():
     # epochs = 100
 
     pre_accuracy = net.test_network(test_x, test_y) * 100
-    print("Testing accuracy pre-training on the 10,000 element test set: {:.2f}".format(pre_accuracy))
+    print("Testing accuracy pre-training on the 10,000 element test set: {:.2f}%".format(pre_accuracy))
 
     num_folds = int(num_training_examples / net.batch_size)
     print("Performing {}-fold cross validation while training on the 60,000 element train set".format(num_folds))
@@ -229,7 +260,7 @@ def main():
         # Shuffle the training examples for better results
         x, y, y_oh = net.shuffle_training_set(x, y, y_oh)
 
-        training_batches = filter(lambda fold: fold != k, range(num_folds))
+        training_batches = filter(lambda fold: fold != k, range(num_folds-1))
         for i in training_batches:
             batch_start = net.batch_size * i
             batch_end = net.batch_size * (i + 1)
@@ -271,7 +302,7 @@ def main():
     plt.legend([
         'Training Set (all 60000 examples)',
         'Test Set (all 10000 examples)',
-        'Cross-validation Set (300 per fold)',
+        'Cross-validation Set ({} per fold)'.format(net.batch_size),
     ], loc='upper right')
     plt.show()
 
