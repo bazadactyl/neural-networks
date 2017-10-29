@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from load_mnist_data import load_mnist_data
 
@@ -12,7 +13,7 @@ def sigmoid(x, inverse=False):
 
 
 class FFNet:
-    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=100):
+    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=300):
         self._arch = arch
         self.batch_size = batch_size
         self._lr = lr
@@ -189,34 +190,72 @@ def main():
     for i, label in enumerate(train_y):
         train_y_onehot[label][i] = 1
 
-    num_examples = train_x.shape[1]
-    iterations = (num_examples - (num_examples % net.batch_size)) / net.batch_size
-    epochs = 100
+    num_training_examples = train_x.shape[1]
 
-    pre_accuracy = net.test_network(test_x, test_y)*100
-    print("[INFO]: Testing accuracy pre-training: %f" % pre_accuracy)
+    # iterations = (num_training_examples - (num_training_examples % net.batch_size)) / net.batch_size
+    # epochs = 100
 
-    for e in range(epochs):
-        train_x, train_y, train_y_onehot = net.shuffle_training_set(train_x, train_y, train_y_onehot)
+    pre_accuracy = net.test_network(test_x, test_y) * 100
+    print("[INFO]: Testing accuracy pre-training on the 10,000 element test set: %f" % pre_accuracy)
 
-        for i in range(int(iterations)):
-            start = net.batch_size * i
-            end = net.batch_size * (i + 1)
+    num_folds = int(num_training_examples / net.batch_size)
+    print("Performing {}-fold cross validation while training on the 60,000 element train set".format(num_folds))
 
-            x = np.array([row[start:end] for row in train_x])
-            y = np.array([row[start:end] for row in train_y_onehot])
+    accuracy = []
 
-            a, o = net._propagate(x)
-            d = net._backpropagate(y)
+    for k in range(num_folds):
+        # Deep copy the training set because we want to manipulate it
+        x = np.copy(train_x)
+        y = np.copy(train_y).reshape(1, 60000)
+        y_oh = np.copy(train_y_onehot)
+
+        # Indices of the cross-validation (test) examples
+        cv_start = net.batch_size * k
+        cv_end = net.batch_size * (k + 1)
+
+        # Get the cross-validation (test) examples
+        cv_columns = [x for x in range(cv_start, cv_end)]
+        cv_x = x[:, cv_columns]
+        cv_y = y[:, cv_columns]
+        cv_y_oh = y_oh[:, cv_columns]
+
+        # Remove cross-validation (test) examples from the training set
+        x = np.delete(x, cv_columns, 1)
+        y = np.delete(y, cv_columns, 1)
+        y_oh = np.delete(y_oh, cv_columns, 1)
+
+        # Shuffle the training examples for better results
+        x, y, y_oh = net.shuffle_training_set(x, y, y_oh)
+
+        training_batches = filter(lambda fold: fold != k, range(num_folds))
+        for i in training_batches:
+            batch_start = net.batch_size * i
+            batch_end = net.batch_size * (i + 1)
+
+            x_batch = np.array([row[batch_start:batch_end] for row in x])
+            y_batch = np.array([row[batch_start:batch_end] for row in y_oh])
+
+            a, o = net._propagate(x_batch)
+            d = net._backpropagate(y_batch)
             net._adjust_weights()
             net._adjust_biases()
 
+        cv_y = cv_y.reshape(net.batch_size,)
+        cv_acc = net.test_network(cv_x, cv_y) * 100
+
         train_acc = net.test_network(train_x, train_y) * 100
         test_acc = net.test_network(test_x, test_y) * 100
-        print("[INFO]: Epoch {}".format(e))
-        print("\tTraining Set Accuracy: {:.2f}%".format(train_acc))
-        print("\t Testing Set Accuracy: {:.2f}%".format(test_acc))
+        print("[INFO]: Epoch / fold #{}".format(k))
+        print("\tCross-validation Accuracy: {:.2f}%".format(cv_acc))
+        print("\t    Training Set Accuracy: {:.2f}%".format(train_acc))
+        print("\t     Testing Set Accuracy: {:.2f}%".format(test_acc))
 
+        accuracy.append(cv_acc)
+
+    plt.plot(accuracy)
+    plt.xlabel("Fold Number")
+    plt.ylabel("Cross Validation Set Accuracy")
+    plt.show()
 
 if __name__ == '__main__':
     main()
