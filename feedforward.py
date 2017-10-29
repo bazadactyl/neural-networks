@@ -12,9 +12,9 @@ def sigmoid(x, inverse=False):
 
 
 class FFNet:
-    def __init__(self, arch=np.array([784, 40, 20, 10]), lr=0.5, batch_size=128):
+    def __init__(self, arch=np.array([784, 50, 20, 10]), lr=0.001, batch_size=100):
         self._arch = arch
-        self._batch_size = batch_size
+        self.batch_size = batch_size
         self._lr = lr
         self._num_layers = len(self._arch)
         self._init_w()
@@ -26,14 +26,16 @@ class FFNet:
         self.target_batches = None
 
 
-    def _init_w(self, low=0, high=1):
+    def _init_w(self, low=-1, high=1):
         ''' Initialize weights using gaussian distribution '''
-        self._w = [np.random.normal(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
+        # self._w = [np.random.normal(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
+        self._w = [np.random.randn(j, i) for i, j in zip(self._arch[:-1], self._arch[1:])]
 
 
-    def _init_b(self, low=0, high=1):
+    def _init_b(self, low=-1, high=1):
         ''' Initialize biases using gaussian distribution '''
-        self._b = [np.random.normal(low, high, size=(i, 1)) for i in self._arch[1:]]
+        # self._b = [np.random.normal(low, high, size=(i, 1)) for i in self._arch[1:]]
+        self._b = [np.random.randn(i, 1) for i in self._arch[1:]]
 
 
     def _activate(self, z, inverse=False):
@@ -61,7 +63,7 @@ class FFNet:
             tmp = self._activate(tmp)
             self._a.append(tmp)
 
-        if (return_label):
+        if return_label:
             return tmp
         else:
             return self._a, self._o
@@ -78,8 +80,9 @@ class FFNet:
 
         ''' Calculating the gradient for all layers l = 0 ... n-1 '''
         for l in range(self._num_layers-2):
-            d = np.multiply(np.dot((self._w[-(l+1)]).T, self._d[l]),
-                            sigmoid(self._o[-(l+2)], inverse=True))
+            weights_l = (self._w[-(l+1)]).T
+            delta_l = self._d[l]
+            d = np.multiply(np.dot(weights_l, delta_l), sigmoid(self._o[-(l+2)], inverse=True))
             self._d.append(d)
 
         ''' Reversal of the list of gradients '''
@@ -89,14 +92,14 @@ class FFNet:
 
     def _adjust_weights(self):
         ''' Adjust weights according to gradients self._d '''
-        self._w = [w - (self._lr / self._batch_size) * np.dot(d, a.T)
+        self._w = [w - (self._lr / self.batch_size) * np.dot(d, a.T)
                    for w, d, a in zip(self._w, self._d, self._a)]
         return self._w
 
 
     def _adjust_biases(self):
         ''' Adjust biases according to gradients self._d '''
-        self._b = [b - (self._lr / self._batch_size) * (np.sum(d, axis=1)).reshape(b.shape)
+        self._b = [b - (self._lr / self.batch_size) * (np.sum(d, axis=1)).reshape(b.shape)
                    for b, d in zip(self._b, self._d)]
         return self._b
 
@@ -126,11 +129,15 @@ class FFNet:
         return a
 
 
-    def _shuffle_training_set(self):
+    @staticmethod
+    def shuffle_training_set(inputs, labels, labels_onehot):
         ''' Permute the inputs. Yields better results during training. '''
-        permutation = np.random.permutation(self.training_set_size)
-        self.train_inputs = self.train_inputs.T[permutation].T
-        self.train_targets = self.train_targets.T[permutation].T
+        num_examples = inputs.shape[1]
+        permutation = np.random.permutation(num_examples)
+        shuf_inputs = inputs.T[permutation].T
+        shuf_labels = labels.T[permutation].T
+        shuf_labels_onehot = labels_onehot.T[permutation].T
+        return shuf_inputs, shuf_labels, shuf_labels_onehot
 
 
     def _batch_training_data(self, batch_size):
@@ -149,13 +156,13 @@ class FFNet:
             self.target_batches.append(target_batch)
 
 
-    def train_network(self, train_images, train_labels, epochs=50):
+    def train_network(self, train_images, train_labels, epochs=500):
         self._prepare_train_inputs(train_images)
         self._prepare_train_targets(train_labels)
 
         for epoch in range(epochs):
-            self._shuffle_training_set()
-            self._batch_training_data(self._batch_size)
+            self.shuffle_training_set()
+            self._batch_training_data(self.batch_size)
 
             for input_batch, target_batch in zip(self.input_batches, self.target_batches):
                 self._propagate(input_batch[:,0])
@@ -170,38 +177,58 @@ class FFNet:
     def test_network(self, test_input, test_labels):
         acc = []
 
-        for x,y in zip(test_input, test_labels):
-            if np.argmax(self._propagate(x, return_label=True)) == y:
+        output_labels = self._propagate(test_input, return_label=True).T
+        num_images = output_labels.shape[0]
+
+        for i in range(num_images):
+            output = np.argmax(output_labels[i])
+            if output == test_labels[i]:
                 acc.append(1)
 
-        return float(len(acc))/float(test_input.shape[0])
+        return float(len(acc)) / float(num_images)
 
 
 def main():
-    # Test
     net = FFNet()
 
     train_X, train_y, test_X, test_y = load_mnist_data()
-    train_X = train_X.reshape(60000,784,1)
-    test_X = test_X.reshape(10000,784,1)
-    train_y_onehot = net._prepare_y(train_y)
 
-    iterations = (train_X.shape[0] - (train_X.shape[0] % net._batch_size))/net._batch_size
+    train_X = train_X.reshape(60000, 784).T
+    train_y = train_y.T[0]
 
-    c = 0
+    test_X = test_X.reshape(10000, 784).T
+    test_y = test_y.T[0]
+
+    train_y_onehot = np.zeros((10, 60000))
+    for i, label in enumerate(train_y):
+        train_y_onehot[label][i] = 1
+
+    num_examples = train_X.shape[1]
+
+    # train_y_onehot = net._prepare_y(train_y)
+
+    iterations = (num_examples - (num_examples % net.batch_size)) / net.batch_size
+
+    # c = 0
     epochs = 50
 
     pre_accuracy = net.test_network(test_X, test_y)*100
     print("[INFO]: Testing accuracy pre-training: %f" % pre_accuracy)
 
     for e in range(epochs):
+        train_X, train_y, train_y_onehot = net.shuffle_training_set(train_X, train_y, train_y_onehot)
+
         for i in range(int(iterations)):
-            for x,y in zip(train_X[(net._batch_size*i):(net._batch_size*(i+1))],
-                        train_y_onehot[(net._batch_size*i):(net._batch_size*(i+1))]):
-                a,o = net._propagate(x)
-                d = net._backpropagate(y)
-                net._adjust_weights()
-                net._adjust_biases()
+            start = net.batch_size * i
+            end = net.batch_size * (i + 1)
+
+            x = np.array([row[start:end] for row in train_X])
+            y = np.array([row[start:end] for row in train_y_onehot])
+
+            a, o = net._propagate(x)
+            d = net._backpropagate(y)
+            net._adjust_weights()
+            net._adjust_biases()
         
         acc = net.test_network(test_X, test_y)*100
         print("[INFO]: Epoch %d, Training Accuracy: %f" % (e, acc))
