@@ -27,7 +27,7 @@ def softmax(x):
 
 
 class FeedForwardNetwork:
-    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=300):
+    def __init__(self, arch=np.array([784, 128, 128, 10]), lr=0.005, batch_size=600):
         self._arch = arch
         self.batch_size = batch_size
         self._lr = lr
@@ -39,6 +39,7 @@ class FeedForwardNetwork:
         self.training_set_size = 0
         self.input_batches = None
         self.target_batches = None
+        self.weight_decay = 0.2
 
     def _init_w(self, low=-1, high=1):
         ''' Initialize weights using gaussian distribution '''
@@ -115,11 +116,12 @@ class FeedForwardNetwork:
 
     def _adjust_weights(self):
         """ Adjust weights according to gradients self._d """
-        learn_rate = self._lr / self.batch_size
+        learn_rate = self._lr
         new_weights = []
 
         for weight, delta, activation in zip(self._w, self._d, self._a):
-            new_w = weight - learn_rate * np.dot(delta, activation.T)
+            regularization = (learn_rate * self.weight_decay) * weight
+            new_w = weight - learn_rate * np.dot(delta, activation.T) - regularization
             new_weights.append(new_w)
 
         self._w = new_weights
@@ -127,9 +129,15 @@ class FeedForwardNetwork:
 
     def _adjust_biases(self):
         """ Adjust biases according to gradients self._d """
-        learn_rate = self._lr / self.batch_size
-        self._b = [b - learn_rate * (np.sum(d, axis=1)).reshape(b.shape)
-                   for b, d in zip(self._b, self._d)]
+        learn_rate = self._lr
+        new_biases = []
+
+        for bias, delta in zip(self._b, self._d):
+            regularization = (learn_rate * self.weight_decay) * bias
+            new_b = bias - learn_rate * (np.sum(delta, axis=1)).reshape(bias.shape) - regularization
+            new_biases.append(new_b)
+
+        self._b = new_biases
         return self._b
 
     def _prepare_train_inputs(self, images):
@@ -283,7 +291,7 @@ def main():
 
         train_acc = net.test_network(train_x, train_y) * 100
         test_acc = net.test_network(test_x, test_y) * 100
-        print("Fold #{}".format(k+1))
+        print("Fold {} / {}".format(k+1, num_folds))
         print("\tCross-validation Accuracy: {:.2f}%".format(cv_acc))
         print("\t    Training Set Accuracy: {:.2f}%".format(train_acc))
         print("\t     Testing Set Accuracy: {:.2f}%".format(test_acc))
@@ -292,22 +300,34 @@ def main():
         test_error.append(100.0 - test_acc)
         cv_error.append(100.0 - cv_acc)
 
-    print("\nFinished training with {}-fold cross-validation!".format(num_folds))
-    print("\tLearning rate: {:.4f}".format(net._lr / net.batch_size))
-    print("\tExamples per fold: {}".format(net.batch_size))
-    print("Average cross-validation error: {:.2f}%".format(sum(cv_error) / num_folds))
+    avg_cv_error = np.average(cv_error)
 
+    print("\nFinished training with {}-fold cross-validation!".format(num_folds))
+    print("\tLearning rate: {:.4f}".format(net._lr))
+    print("\tExamples per fold: {}".format(net.batch_size))
+    print("Average cross-validation error: {:.2f}%".format(avg_cv_error))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
     colormap = plt.cm.gist_ncar
     plt.gca().set_prop_cycle('color', [colormap(i) for i in np.linspace(0, 0.9, 3)])
     plt.plot(train_error)
+    # plt.axhline(y=np.average(train_error), color='red')
     plt.plot(test_error)
+    # plt.axhline(y=np.average(test_error), color='blue')
     plt.plot(cv_error)
+    plt.axhline(y=avg_cv_error, color='red')
+    plt.text(1.02, avg_cv_error, '{:.2f}'.format(avg_cv_error), va='center', ha="left",
+             bbox=dict(facecolor="w", alpha=0.5), transform=ax.get_yaxis_transform())
     plt.xlabel("Fold Number")
     plt.ylabel("Error Rate (%)")
     plt.legend([
-        'Training Set (all 60000 examples)',
-        'Test Set (all 10000 examples)',
-        'Cross-validation Set ({} per fold)'.format(net.batch_size),
+        'Training Set Error (all 60000 examples)',
+        # 'Average Training Error',
+        'Testing Set Error (all 10000 examples)',
+        # 'Average Testing Error',
+        'Cross-validation Set Error ({} per fold)'.format(net.batch_size),
+        'Average Cross-validation Error',
     ], loc='upper right')
     plt.show()
 
