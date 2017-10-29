@@ -116,8 +116,13 @@ class FeedForwardNetwork:
     def _adjust_weights(self):
         """ Adjust weights according to gradients self._d """
         learn_rate = self._lr / self.batch_size
-        self._w = [w - learn_rate * np.dot(d, a.T)
-                   for w, d, a in zip(self._w, self._d, self._a)]
+        new_weights = []
+
+        for weight, delta, activation in zip(self._w, self._d, self._a):
+            new_w = weight - learn_rate * np.dot(delta, activation.T)
+            new_weights.append(new_w)
+
+        self._w = new_weights
         return self._w
 
     def _adjust_biases(self):
