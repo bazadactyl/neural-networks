@@ -12,7 +12,7 @@ def sigmoid(x, inverse=False):
 
 
 class FFNet:
-    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=2., batch_size=200):
+    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=100):
         self._arch = arch
         self.batch_size = batch_size
         self._lr = lr
@@ -25,32 +25,23 @@ class FFNet:
         self.input_batches = None
         self.target_batches = None
 
-
     def _init_w(self, low=-1, high=1):
         ''' Initialize weights using gaussian distribution '''
         # self._w = [np.random.normal(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
         self._w = [np.random.randn(j, i) for i, j in zip(self._arch[:-1], self._arch[1:])]
-
 
     def _init_b(self, low=-1, high=1):
         ''' Initialize biases using gaussian distribution '''
         # self._b = [np.random.normal(low, high, size=(i, 1)) for i in self._arch[1:]]
         self._b = [np.random.randn(i, 1) for i in self._arch[1:]]
 
-
-    def _activate(self, z, inverse=False):
-        ''' Sigmoid activation function '''
-        return sigmoid(z, inverse)
-
-
     def _calculate_z(self, x, n):
         ''' Calculate raw output value z at layer n '''
         return np.dot(self._w[n], x) + self._b[n]
 
-
     def _propagate(self, x, return_label=False):
-        ''' Calculate the activation and output values at each layer given
-            input x '''
+        """ Calculate the activation and output values at each layer given
+            input x """
         self._a = []
         self._o = []
         self._a.append(x)
@@ -60,7 +51,7 @@ class FFNet:
         for l in range(self._num_layers-1):
             tmp = self._calculate_z(tmp, l)
             self._o.append(tmp)
-            tmp = self._activate(tmp)
+            tmp = sigmoid(tmp)
             self._a.append(tmp)
 
         if return_label:
@@ -68,14 +59,15 @@ class FFNet:
         else:
             return self._a, self._o
 
-
     def _backpropagate(self, y):
-        ''' Propagate error signal backward from output layer '''
+        """ Propagate error signal backward from output layer """
         self._d = []
 
         ''' Calculating the gradient for the output layer l = n '''
-        out_d = np.multiply((self._a[-1] - y), 
-                             self._activate(self._o[-1], inverse=True))
+        out_d = np.multiply(
+            self._a[-1] - y,
+            sigmoid(self._o[-1], inverse=True)
+        )
         self._d.append(out_d)
 
         ''' Calculating the gradient for all layers l = 0 ... n-1 '''
@@ -89,36 +81,34 @@ class FFNet:
         self._d = self._d[::-1]
         return self._d
 
-
     def _adjust_weights(self):
-        ''' Adjust weights according to gradients self._d '''
-        self._w = [w - (self._lr / self.batch_size) * np.dot(d, a.T)
+        """ Adjust weights according to gradients self._d """
+        learn_rate = self._lr / self.batch_size
+        self._w = [w - learn_rate * np.dot(d, a.T)
                    for w, d, a in zip(self._w, self._d, self._a)]
         return self._w
 
-
     def _adjust_biases(self):
-        ''' Adjust biases according to gradients self._d '''
-        self._b = [b - (self._lr / self.batch_size) * (np.sum(d, axis=1)).reshape(b.shape)
+        """ Adjust biases according to gradients self._d """
+        learn_rate = self._lr / self.batch_size
+        self._b = [b - learn_rate * (np.sum(d, axis=1)).reshape(b.shape)
                    for b, d in zip(self._b, self._d)]
         return self._b
 
-
     def _prepare_train_inputs(self, images):
-        ''' Arrange the inputs such that each column respresents the pixels of one image. '''
+        """ Arrange the inputs such that each column represents the pixels of one image. """
         self.train_inputs = images.T
         self.training_set_size = self.train_inputs.shape[1]
 
-
     def _prepare_train_targets(self, labels):
-        ''' Arrange the targets such that each column represents the desired output for an image. '''
+        """ Arrange the targets such that each column represents the desired output for an image. """
         labels = labels.T[0]
         self.train_targets = np.zeros((10, self.training_set_size))
         for i, label in enumerate(labels):
             self.train_targets[label][i] = 1
 
-
-    def _prepare_y(self, y):
+    @staticmethod
+    def _prepare_y(y):
         # Re-implementation of _prepare_train_targets to match our current data format
         a = np.zeros((y.shape[0], 10, 1))
 
@@ -127,7 +117,6 @@ class FFNet:
             a[i] = a[i].reshape(10,1)
 
         return a
-
 
     @staticmethod
     def shuffle_training_set(inputs, labels, labels_onehot):
@@ -138,7 +127,6 @@ class FFNet:
         shuf_labels = labels.T[permutation].T
         shuf_labels_onehot = labels_onehot.T[permutation].T
         return shuf_inputs, shuf_labels, shuf_labels_onehot
-
 
     def _batch_training_data(self, batch_size):
         num_images = self.train_inputs.shape[1]
@@ -154,7 +142,6 @@ class FFNet:
             self.input_batches.append(input_batch)
             target_batch = np.array([row[start:end] for row in self.train_targets])
             self.target_batches.append(target_batch)
-
 
     def train_network(self, train_images, train_labels, epochs=500):
         self._prepare_train_inputs(train_images)
@@ -173,7 +160,6 @@ class FFNet:
             # Backpropagate
             print('Hello')
 
-
     def test_network(self, test_input, test_labels):
         acc = []
 
@@ -191,47 +177,45 @@ class FFNet:
 def main():
     net = FFNet()
 
-    train_X, train_y, test_X, test_y = load_mnist_data()
+    train_x, train_y, test_x, test_y = load_mnist_data()
 
-    train_X = train_X.reshape(60000, 784).T
+    train_x = train_x.reshape(60000, 784).T
     train_y = train_y.T[0]
 
-    test_X = test_X.reshape(10000, 784).T
+    test_x = test_x.reshape(10000, 784).T
     test_y = test_y.T[0]
 
     train_y_onehot = np.zeros((10, 60000))
     for i, label in enumerate(train_y):
         train_y_onehot[label][i] = 1
 
-    num_examples = train_X.shape[1]
-
-    # train_y_onehot = net._prepare_y(train_y)
-
+    num_examples = train_x.shape[1]
     iterations = (num_examples - (num_examples % net.batch_size)) / net.batch_size
+    epochs = 100
 
-    # c = 0
-    epochs = 500
-
-    pre_accuracy = net.test_network(test_X, test_y)*100
+    pre_accuracy = net.test_network(test_x, test_y)*100
     print("[INFO]: Testing accuracy pre-training: %f" % pre_accuracy)
 
     for e in range(epochs):
-        train_X, train_y, train_y_onehot = net.shuffle_training_set(train_X, train_y, train_y_onehot)
+        train_x, train_y, train_y_onehot = net.shuffle_training_set(train_x, train_y, train_y_onehot)
 
         for i in range(int(iterations)):
             start = net.batch_size * i
             end = net.batch_size * (i + 1)
 
-            x = np.array([row[start:end] for row in train_X])
+            x = np.array([row[start:end] for row in train_x])
             y = np.array([row[start:end] for row in train_y_onehot])
 
             a, o = net._propagate(x)
             d = net._backpropagate(y)
             net._adjust_weights()
             net._adjust_biases()
-        
-        acc = net.test_network(test_X, test_y)*100
-        print("[INFO]: Epoch %d, Training Accuracy: %f" % (e, acc))
+
+        train_acc = net.test_network(train_x, train_y) * 100
+        test_acc = net.test_network(test_x, test_y) * 100
+        print("[INFO]: Epoch {}".format(e))
+        print("\tTraining Set Accuracy: {:.2f}%".format(train_acc))
+        print("\t Testing Set Accuracy: {:.2f}%".format(test_acc))
 
 
 if __name__ == '__main__':
