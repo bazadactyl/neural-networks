@@ -8,11 +8,11 @@ def sigmoid(x, inverse=False):
     if not inverse:
         return result
     else:
-        return result - (1 - result)
+        return result * (1 - result)
 
 
 class FFNet:
-    def __init__(self, arch=np.array([784, 50, 20, 10]), lr=0.001, batch_size=100):
+    def __init__(self, arch=np.array([784, 50, 30, 10]), lr=2., batch_size=200):
         self._arch = arch
         self.batch_size = batch_size
         self._lr = lr
@@ -210,7 +210,7 @@ def main():
     iterations = (num_examples - (num_examples % net.batch_size)) / net.batch_size
 
     # c = 0
-    epochs = 50
+    epochs = 500
 
     pre_accuracy = net.test_network(test_X, test_y)*100
     print("[INFO]: Testing accuracy pre-training: %f" % pre_accuracy)
