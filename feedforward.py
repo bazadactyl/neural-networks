@@ -68,7 +68,7 @@ class FeedForwardNetwork:
 
         for layer in range(num_neuron_layers):
             if layer == output_layer:
-                activate = softmax
+                activate = sigmoid
             else:
                 activate = sigmoid
 
@@ -87,7 +87,7 @@ class FeedForwardNetwork:
         self._d = []
 
         ''' Pick activation functions for hidden and output layers '''
-        output_layer_activate = softmax
+        output_layer_activate = sigmoid
         hidden_layer_activate = sigmoid
 
         ''' Calculating the gradient for the output layer l = n '''
