@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as stats
 from load_mnist_data import load_mnist_data
 
 
@@ -27,7 +28,7 @@ def softmax(x):
 
 
 class FeedForwardNetwork:
-    def __init__(self, arch=np.array([784, 128, 128, 10]), lr=0.005, batch_size=600):
+    def __init__(self, arch=np.array([784, 160, 60, 10]), lr=0.001, batch_size=200):
         self._arch = arch
         self.batch_size = batch_size
         self._lr = lr
@@ -41,15 +42,17 @@ class FeedForwardNetwork:
         self.target_batches = None
         self.weight_decay = 0.2
 
-    def _init_w(self, low=-1, high=1):
+    def _init_w(self, low=-0.5, high=0.5):
         ''' Initialize weights using gaussian distribution '''
         # self._w = [np.random.normal(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
         self._w = [np.random.randn(j, i) for i, j in zip(self._arch[:-1], self._arch[1:])]
+        # self._w = [np.random.uniform(low, high, size=(j, i)) for i, j in zip(self._arch[:-1], self._arch[1:])]
 
-    def _init_b(self, low=-1, high=1):
+    def _init_b(self, low=-0.5, high=0.5):
         ''' Initialize biases using gaussian distribution '''
         # self._b = [np.random.normal(low, high, size=(i, 1)) for i in self._arch[1:]]
         self._b = [np.random.randn(i, 1) for i in self._arch[1:]]
+        # self._b = [np.random.uniform(low, high, size=(i, 1)) for i in self._arch[1:]]
 
     def _calculate_z(self, x, n):
         ''' Calculate raw output value z at layer n '''
@@ -242,7 +245,7 @@ def main():
     pre_accuracy = net.test_network(test_x, test_y) * 100
     print("Testing accuracy pre-training on the 10,000 element test set: {:.2f}%".format(pre_accuracy))
 
-    num_folds = int(num_training_examples / net.batch_size)
+    num_folds = epochs = int(num_training_examples / net.batch_size)
     print("Performing {}-fold cross validation while training on the 60,000 element train set".format(num_folds))
 
     train_error = []
@@ -300,34 +303,40 @@ def main():
         test_error.append(100.0 - test_acc)
         cv_error.append(100.0 - cv_acc)
 
-    avg_cv_error = np.average(cv_error)
-
     print("\nFinished training with {}-fold cross-validation!".format(num_folds))
     print("\tLearning rate: {:.4f}".format(net._lr))
     print("\tExamples per fold: {}".format(net.batch_size))
-    print("Average cross-validation error: {:.2f}%".format(avg_cv_error))
+
+    avg_cv_error = np.average(cv_error)
+    print("\nAverage cross-validation error: {:.2f}%".format(avg_cv_error))
+
+    confidence = 0.95
+    samples = test_error[-int(epochs/10):-1]  # test set classification errors from last 10% of epochs
+    mean = np.mean(samples)
+    sigma = np.std(samples)
+    interval = stats.norm.interval(confidence, loc=mean, scale=sigma)
+
+    print("\nClassifier error rate using the 10,000 element test set: {:.2f}%".format(test_error[-1]))
+    print("We have {}% confidence that the classifier error rate is in the interval: ({:.2f}, {:.2f})".format(
+        int(confidence*100), interval[0], interval[1]))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
     colormap = plt.cm.gist_ncar
     plt.gca().set_prop_cycle('color', [colormap(i) for i in np.linspace(0, 0.9, 3)])
     plt.plot(train_error)
-    # plt.axhline(y=np.average(train_error), color='red')
     plt.plot(test_error)
-    # plt.axhline(y=np.average(test_error), color='blue')
     plt.plot(cv_error)
-    plt.axhline(y=avg_cv_error, color='red')
-    plt.text(1.02, avg_cv_error, '{:.2f}'.format(avg_cv_error), va='center', ha="left",
+    plt.axhline(y=test_error[-1], color='red')
+    plt.text(1.02, test_error[-1], '{:.2f}%'.format(test_error[-1]), va='center', ha="left",
              bbox=dict(facecolor="w", alpha=0.5), transform=ax.get_yaxis_transform())
-    plt.xlabel("Fold Number")
+    plt.xlabel("Epoch")
     plt.ylabel("Error Rate (%)")
     plt.legend([
         'Training Set Error (all 60000 examples)',
-        # 'Average Training Error',
         'Testing Set Error (all 10000 examples)',
-        # 'Average Testing Error',
         'Cross-validation Set Error ({} per fold)'.format(net.batch_size),
-        'Average Cross-validation Error',
+        'Testing Error for Final Epoch',
     ], loc='upper right')
     plt.show()
 
