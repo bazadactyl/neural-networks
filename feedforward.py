@@ -12,7 +12,7 @@ def sigmoid(x, inverse=False):
         return result * (1 - result)
 
 
-class FFNet:
+class FeedForwardNetwork:
     def __init__(self, arch=np.array([784, 50, 30, 10]), lr=1.0, batch_size=300):
         self._arch = arch
         self.batch_size = batch_size
@@ -176,7 +176,7 @@ class FFNet:
 
 
 def main():
-    net = FFNet()
+    net = FeedForwardNetwork()
 
     train_x, train_y, test_x, test_y = load_mnist_data()
 
@@ -196,12 +196,14 @@ def main():
     # epochs = 100
 
     pre_accuracy = net.test_network(test_x, test_y) * 100
-    print("[INFO]: Testing accuracy pre-training on the 10,000 element test set: %f" % pre_accuracy)
+    print("Testing accuracy pre-training on the 10,000 element test set: {:.2f}".format(pre_accuracy))
 
     num_folds = int(num_training_examples / net.batch_size)
     print("Performing {}-fold cross validation while training on the 60,000 element train set".format(num_folds))
 
-    accuracy = []
+    train_error = []
+    test_error = []
+    cv_error = []
 
     for k in range(num_folds):
         # Deep copy the training set because we want to manipulate it
@@ -245,16 +247,32 @@ def main():
 
         train_acc = net.test_network(train_x, train_y) * 100
         test_acc = net.test_network(test_x, test_y) * 100
-        print("[INFO]: Epoch / fold #{}".format(k))
+        print("Fold #{}".format(k+1))
         print("\tCross-validation Accuracy: {:.2f}%".format(cv_acc))
         print("\t    Training Set Accuracy: {:.2f}%".format(train_acc))
         print("\t     Testing Set Accuracy: {:.2f}%".format(test_acc))
 
-        accuracy.append(cv_acc)
+        train_error.append(100.0 - train_acc)
+        test_error.append(100.0 - test_acc)
+        cv_error.append(100.0 - cv_acc)
 
-    plt.plot(accuracy)
+    print("\nFinished training with {}-fold cross-validation!".format(num_folds))
+    print("\tLearning rate: {:.4f}".format(net._lr / net.batch_size))
+    print("\tExamples per fold: {}".format(net.batch_size))
+    print("Average cross-validation error: {:.2f}%".format(sum(cv_error) / num_folds))
+
+    colormap = plt.cm.gist_ncar
+    plt.gca().set_prop_cycle('color', [colormap(i) for i in np.linspace(0, 0.9, 3)])
+    plt.plot(train_error)
+    plt.plot(test_error)
+    plt.plot(cv_error)
     plt.xlabel("Fold Number")
-    plt.ylabel("Cross Validation Set Accuracy")
+    plt.ylabel("Error Rate (%)")
+    plt.legend([
+        'Training Set (all 60000 examples)',
+        'Test Set (all 10000 examples)',
+        'Cross-validation Set (300 per fold)',
+    ], loc='upper right')
     plt.show()
 
 if __name__ == '__main__':
