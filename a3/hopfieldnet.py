@@ -17,7 +17,7 @@ def main():
     # Append only 1's and 5's from MNIST to X and y lists
     X = []
     y = []
-    [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 0 or target[i] == 4]
+    [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 1 or target[i] == 5]
 
     # Convert X and y lists to numpy arrays
     X, y = (np.asarray(X, dtype=np.int64), np.asarray(y, dtype=np.float64))
