@@ -7,6 +7,23 @@ class HopfieldNetwork:
     def __init__(self):
         pass
 
+    # Initialize weights
+    # Note: Number of "synapses" = neurons^2 - neurons
+    #       Subtraction due to the fact that neurons cannot connect to themselves
+    def _init_w(self):
+        pass
+
+    # Initialize biases
+    def _init_b(self):
+        pass
+
+    # Calculate global energy
+    def _global_energy(self):
+        pass
+
+    # Calculate quadratic energy function
+    def _qef(self):
+        pass
 
 def main():
     # Load and prepare data
