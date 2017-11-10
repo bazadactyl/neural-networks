@@ -2,6 +2,7 @@ import random
 import numpy as np
 import tensorflow as tf
 from sklearn.datasets import fetch_mldata
+import matplotlib.pyplot as plt
 
 
 class HopfieldNetwork:
@@ -62,14 +63,17 @@ class HopfieldNetwork:
             if iteration % 200 == 0:
                 energy = self._global_energy(active, threshold)
                 history.append(energy)
+        recovered_image = active.reshape(28, 28)
+        return recovered_image
 
     @staticmethod
     def degrade(x, noise):
-        pixels_to_alter = x.size // noise
+        pixels_to_alter = round(x.size * noise)
         for _ in range(pixels_to_alter):
             pixel = random.choice(range(x.size))
             x[pixel] = 1 if x[pixel] == -1 else -1
         return x
+
 
     @staticmethod
     def stable(energy_history, check_last=5):
@@ -80,6 +84,27 @@ class HopfieldNetwork:
             if recent_states[i] != recent_states[i + 1]:
                 return False
         return True
+
+
+def visualize(x):
+    image = x.reshape(28, 28)
+
+    fig, ax = plt.subplots()
+    ax.imshow(x, interpolation='nearest')
+
+    num_rows, num_cols = image.shape
+
+    def format_coord(x, y):
+        col = int(x + 0.5)
+        row = int(y + 0.5)
+        if 0 <= col < num_cols and 0 <= row < num_rows:
+            z = x[row, col]
+            return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
+        else:
+            return 'x=%1.4f, y=%1.4f' % (x, y)
+
+    ax.format_coord = format_coord
+    plt.show()
 
 
 def main():
@@ -112,9 +137,10 @@ def main():
     print(net.train(X))
 
     # Test the network
-    x = net.degrade(X[0], 5)
+    x = np.copy(X[0])
+    x = net.degrade(x, 0.05)
     x = net.recover(x)
-
+    visualize(x)
 
 
 if __name__ == '__main__':
