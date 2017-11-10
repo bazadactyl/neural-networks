@@ -61,6 +61,13 @@ class HopfieldNetwork:
                 weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
             active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
 
+        # Ensure each neuron was activated at least once, in random order
+        remaining = list(range(num_neurons))
+        while remaining:
+            random_index = random.randint(0, len(remaining) - 1)
+            random_neuron = remaining.pop(random_index)
+            activate(random_neuron)
+
         # Recover random bits of the original image until the network is stable
         while not stable(history):
             random_neuron = random.choice(range(num_neurons))
@@ -69,10 +76,6 @@ class HopfieldNetwork:
             if iteration % 100 == 0:
                 energy = self._global_energy(active, threshold)
                 history.append(energy)
-
-        # Ensure each neuron was activated at least once
-        for neuron in range(num_neurons):
-            activate(neuron)
 
         recovered_image = active
         return recovered_image
@@ -127,27 +130,27 @@ def visualize_before_after(original, degraded, recovered):
     fig, axis = plt.subplots(1, 3)
     left, center, right = axis[0], axis[1], axis[2]
 
-    # left.title('Original')
+    left.title.set_text('Original')
     left.imshow(original, interpolation='nearest')
 
-    # center.title('Degraded')
+    center.title.set_text('Degraded')
     center.imshow(degraded, interpolation='nearest')
 
-    # right.title('Recovered')
+    right.title.set_text('Recovered')
     right.imshow(recovered, interpolation='nearest')
 
     def format_coord(x, y):
         col = int(x + 0.5)
         row = int(y + 0.5)
-        if 0 <= col < num_cols and 0 <= row < num_rows:
-            z = x[row, col]
+        if col >= 0 and col < num_cols and row >= 0 and row < num_rows:
+            z = original[row, col]
             return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
         else:
             return 'x=%1.4f, y=%1.4f' % (x, y)
 
-    # left_ax.format_coord = format_coord
-    # center_ax.format_coord = format_coord
-    # right_ax.format_coord = format_coord
+    left.format_coord = format_coord
+    center.format_coord = format_coord
+    right.format_coord = format_coord
 
     plt.show()
 
