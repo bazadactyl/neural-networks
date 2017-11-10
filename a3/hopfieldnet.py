@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import tensorflow as tf
 from sklearn.datasets import fetch_mldata
 import matplotlib.pyplot as plt
 
@@ -31,7 +30,6 @@ class HopfieldNetwork:
                 energy += -0.5 * self._w[neuron_i][neuron_j] * active[neuron_i] * active[neuron_j]
         return energy
 
-
     # Calculate quadratic energy function
     def _qef(self):
         pass
@@ -46,44 +44,45 @@ class HopfieldNetwork:
         return self._w
 
     def recover(self, x, threshold=0.0):
-        num_neurons = x.size
+        image = np.copy(x)
+        num_neurons = image.size
         active = np.random.randint(2, size=num_neurons)
         threshold = [threshold] * num_neurons
         for i, _ in enumerate(active):
             active[i] = -1 if active[i] == 0 else 1
         history = []
         iteration = 0
-        while not self.stable(history):
+        while not stable(history):
             neuron_i = random.choice(range(num_neurons))
             weight_sum = 0.0
             for neuron_j in range(num_neurons):
                 weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
             active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
             iteration += 1
-            if iteration % 200 == 0:
+            if iteration % 100 == 0:
                 energy = self._global_energy(active, threshold)
                 history.append(energy)
-        recovered_image = active.reshape(28, 28)
+        recovered_image = active
         return recovered_image
 
-    @staticmethod
-    def degrade(x, noise):
-        pixels_to_alter = round(x.size * noise)
-        for _ in range(pixels_to_alter):
-            pixel = random.choice(range(x.size))
-            x[pixel] = 1 if x[pixel] == -1 else -1
-        return x
+
+def degrade(x, noise):
+    image = np.copy(x)
+    pixels_to_alter = round(image.size * noise)
+    for _ in range(pixels_to_alter):
+        pixel = random.choice(range(x.size))
+        image[pixel] = 1 if image[pixel] == -1 else -1
+    return image
 
 
-    @staticmethod
-    def stable(energy_history, check_last=5):
-        if len(energy_history) < check_last:
+def stable(energy_history, check_last=5):
+    if len(energy_history) < check_last:
+        return False
+    recent_states = energy_history[-check_last:]
+    for i in range(check_last - 1):
+        if recent_states[i] != recent_states[i + 1]:
             return False
-        recent_states = energy_history[-check_last:]
-        for i in range(check_last - 1):
-            if recent_states[i] != recent_states[i + 1]:
-                return False
-        return True
+    return True
 
 
 def visualize(x):
@@ -104,6 +103,40 @@ def visualize(x):
             return 'x=%1.4f, y=%1.4f' % (x, y)
 
     ax.format_coord = format_coord
+    plt.show()
+
+
+def visualize_before_after(original, degraded, recovered):
+    original = original.reshape(28, 28)
+    degraded = degraded.reshape(28, 28)
+    recovered = recovered.reshape(28, 28)
+    num_rows, num_cols = original.shape
+
+    fig, axis = plt.subplots(1, 3)
+    left, center, right = axis[0], axis[1], axis[2]
+
+    # left.title('Original')
+    left.imshow(original, interpolation='nearest')
+
+    # center.title('Degraded')
+    center.imshow(degraded, interpolation='nearest')
+
+    # right.title('Recovered')
+    right.imshow(recovered, interpolation='nearest')
+
+    def format_coord(x, y):
+        col = int(x + 0.5)
+        row = int(y + 0.5)
+        if 0 <= col < num_cols and 0 <= row < num_rows:
+            z = x[row, col]
+            return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
+        else:
+            return 'x=%1.4f, y=%1.4f' % (x, y)
+
+    # left_ax.format_coord = format_coord
+    # center_ax.format_coord = format_coord
+    # right_ax.format_coord = format_coord
+
     plt.show()
 
 
@@ -134,13 +167,13 @@ def main():
 
     # Initialize network
     net = HopfieldNetwork()
-    print(net.train(X))
+    net.train(X)
 
     # Test the network
-    x = np.copy(X[0])
-    x = net.degrade(x, 0.05)
-    x = net.recover(x)
-    visualize(x)
+    original = np.copy(X[0])
+    degraded = degrade(original, 0.05)
+    recovered = net.recover(degraded)
+    visualize_before_after(original, degraded, recovered)
 
 
 if __name__ == '__main__':
