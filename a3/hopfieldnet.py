@@ -105,6 +105,10 @@ def load_mnist_data():
 
 
 def degrade(x, noise):
+    """Flip random bits in the input image.
+    :param x: the input image
+    :param noise: percentage of bits to flip
+    """
     image = np.copy(x)
     pixels_to_alter = round(image.size * noise)
     for _ in range(pixels_to_alter):
@@ -114,6 +118,7 @@ def degrade(x, noise):
 
 
 def stable(energy_history, check_last=5):
+    """Check if the Hopfield network has stabilized based upon recent energy states."""
     if len(energy_history) < check_last:
         return False
     recent_states = energy_history[-check_last:]
