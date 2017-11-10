@@ -46,22 +46,34 @@ class HopfieldNetwork:
     def recover(self, x, threshold=0.0):
         image = np.copy(x)
         num_neurons = image.size
-        active = np.random.randint(2, size=num_neurons)
+
         threshold = [threshold] * num_neurons
+        active = np.random.randint(2, size=num_neurons)
         for i, _ in enumerate(active):
             active[i] = -1 if active[i] == 0 else 1
+
         history = []
         iteration = 0
-        while not stable(history):
-            neuron_i = random.choice(range(num_neurons))
+
+        def activate(neuron_i):
             weight_sum = 0.0
             for neuron_j in range(num_neurons):
                 weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
             active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
+
+        # Recover random bits of the original image until the network is stable
+        while not stable(history):
+            random_neuron = random.choice(range(num_neurons))
+            activate(random_neuron)
             iteration += 1
             if iteration % 100 == 0:
                 energy = self._global_energy(active, threshold)
                 history.append(energy)
+
+        # Ensure each neuron was activated at least once
+        for neuron in range(num_neurons):
+            activate(neuron)
+
         recovered_image = active
         return recovered_image
 
