@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import sys
 from sklearn.datasets import fetch_mldata
 import matplotlib.pyplot as plt
 
@@ -43,7 +44,7 @@ class HopfieldNetwork:
         self._w -= (np.identity(x.size) * X.shape[0])
         return self._w
 
-    def recover(self, x, threshold=0.0):
+    def restore(self, x, threshold=0.0):
         image = np.copy(x)
         num_neurons = image.size
 
@@ -81,6 +82,28 @@ class HopfieldNetwork:
         return recovered_image
 
 
+def load_mnist_data():
+    # Load and prepare data
+    mnist = fetch_mldata('MNIST original')
+    data = mnist.data
+    target = mnist.target
+
+    # Append only 1's and 5's from MNIST to X and y lists
+    X = []
+    y = []
+    [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 1 or target[i] == 5]
+
+    # Convert X and y lists to numpy arrays
+    X, y = (np.asarray(X, dtype=np.float64), np.asarray(y, dtype=np.uint64))
+
+    # Regularize the training examples
+    for row in range(X.shape[0]):
+        for col in range(X.shape[1]):
+            X[row][col] = 1.0 if X[row][col] > 0.0 else -1.0
+
+    return X, y
+
+
 def degrade(x, noise):
     image = np.copy(x)
     pixels_to_alter = round(image.size * noise)
@@ -100,35 +123,60 @@ def stable(energy_history, check_last=5):
     return True
 
 
-def visualize(x):
-    image = x.reshape(28, 28)
-
+def visualize_network(net):
+    image = net._w
     fig, ax = plt.subplots()
-    ax.imshow(x, interpolation='nearest')
-
+    ax.imshow(image, interpolation='nearest')
+    plt.suptitle('Hopfield Network Weights')
     num_rows, num_cols = image.shape
 
     def format_coord(x, y):
         col = int(x + 0.5)
         row = int(y + 0.5)
         if 0 <= col < num_cols and 0 <= row < num_rows:
-            z = x[row, col]
+            z = image[row, col]
             return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
         else:
             return 'x=%1.4f, y=%1.4f' % (x, y)
 
     ax.format_coord = format_coord
-    plt.show()
+    plt.draw()
 
 
-def visualize_before_after(original, degraded, recovered):
+def visualize_neurons(net):
+    weight_sums = [sum(neuron_weights) for neuron_weights in net._w]
+    image = np.array(weight_sums).reshape(28, 28)
+
+    fig, ax = plt.subplots()
+    ax.imshow(image, interpolation='nearest')
+    plt.suptitle('Hopfield Network Neurons')
+    num_rows, num_cols = image.shape
+
+    def format_coord(x, y):
+        col = int(x + 0.5)
+        row = int(y + 0.5)
+        if 0 <= col < num_cols and 0 <= row < num_rows:
+            z = image[row, col]
+            return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
+        else:
+            return 'x=%1.4f, y=%1.4f' % (x, y)
+
+    ax.format_coord = format_coord
+    plt.draw()
+
+
+def visualize_before_after(original, degraded, restored):
     original = original.reshape(28, 28)
     degraded = degraded.reshape(28, 28)
-    recovered = recovered.reshape(28, 28)
+    restored = restored.reshape(28, 28)
     num_rows, num_cols = original.shape
+
+    l2_norm = np.linalg.norm(original - restored)
 
     fig, axis = plt.subplots(1, 3)
     left, center, right = axis[0], axis[1], axis[2]
+    fig.tight_layout()
+    plt.suptitle('L2 norm between original and restored: {:.2f}'.format(l2_norm))
 
     left.title.set_text('Original')
     left.imshow(original, interpolation='nearest')
@@ -136,13 +184,13 @@ def visualize_before_after(original, degraded, recovered):
     center.title.set_text('Degraded')
     center.imshow(degraded, interpolation='nearest')
 
-    right.title.set_text('Recovered')
-    right.imshow(recovered, interpolation='nearest')
+    right.title.set_text('Restored')
+    right.imshow(restored, interpolation='nearest')
 
     def format_coord(x, y):
         col = int(x + 0.5)
         row = int(y + 0.5)
-        if col >= 0 and col < num_cols and row >= 0 and row < num_rows:
+        if 0 <= col < num_cols and 0 <= row < num_rows:
             z = original[row, col]
             return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
         else:
@@ -152,43 +200,33 @@ def visualize_before_after(original, degraded, recovered):
     center.format_coord = format_coord
     right.format_coord = format_coord
 
-    plt.show()
+    plt.draw()
 
 
 def main():
-    # Load and prepare data
-    mnist = fetch_mldata('MNIST original')
-    data = mnist.data
-    target = mnist.target
+    try:
+        num_samples = int(sys.argv[1])
+    except (IndexError, ValueError):
+        print("Usage:\n\tpython3 hopfieldnet.py <num-training-samples>")
+        return
 
-    # Append only 1's and 5's from MNIST to X and y lists
-    X = []
-    y = []
-    [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 1 or target[i] == 5]
-
-    # Convert X and y lists to numpy arrays
-    X, y = (np.asarray(X, dtype=np.float64), np.asarray(y, dtype=np.uint64))
-
-    # Regularize the training examples
-    for row in range(X.shape[0]):
-        for col in range(X.shape[1]):
-            X[row][col] = 1.0 if X[row][col] > 0.0 else -1.0
-
-    # X = X[0:1]
-    # y = y[0:1]
-
-    X = X[-1:]
-    y = y[-1:]
+    mnist, _ = load_mnist_data()
+    images = [mnist[i] for i in np.random.choice(range(len(mnist)), num_samples, replace=False)]
 
     # Initialize network
     net = HopfieldNetwork()
-    net.train(X)
+    net.train(np.array(images))
+    visualize_network(net)
+    visualize_neurons(net)
 
     # Test the network
-    original = np.copy(X[0])
-    degraded = degrade(original, 0.05)
-    recovered = net.recover(degraded)
-    visualize_before_after(original, degraded, recovered)
+    for original in images:
+        degraded = degrade(original, 0.05)
+        recovered = net.restore(degraded)
+        visualize_before_after(original, degraded, recovered)
+
+    # Display the plots
+    plt.show()
 
 
 if __name__ == '__main__':
