@@ -21,7 +21,9 @@ class HopfieldNetwork:
         self._w = np.zeros((self._shape, self._shape), dtype=np.float64)
         return self._w
 
-    # Calculate global energy
+    def neuron_weights(self):
+        return np.array([sum(neuron_weights) for neuron_weights in self._w])
+
     def _global_energy(self, active, threshold):
         num_neurons = len(active)
         energy = 0.0
@@ -62,6 +64,18 @@ class HopfieldNetwork:
                 weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
             active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
 
+        # def activate(neuron_i):
+        #     weight_sum = 0.0
+        #     for neuron_j in range(num_neurons):
+        #         weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
+        #     if weight_sum > threshold[neuron_i]:
+        #         active[neuron_i] = 1
+        #         for neuron_j in range(num_neurons):
+        #             if self._w[neuron_i][neuron_j] > 0:
+        #                 active[neuron_j] = 1
+        #     else:
+        #         active[neuron_i] = -1
+
         # Ensure each neuron was activated at least once, in random order
         remaining = list(range(num_neurons))
         while remaining:
@@ -77,6 +91,8 @@ class HopfieldNetwork:
             if iteration % 100 == 0:
                 energy = self._global_energy(active, threshold)
                 history.append(energy)
+            if iteration == 2000:
+                break
 
         recovered_image = active
         return recovered_image
@@ -154,7 +170,7 @@ def visualize_neurons(net):
 
     fig, ax = plt.subplots()
     ax.imshow(image, interpolation='nearest')
-    plt.suptitle('Hopfield Network Neurons')
+    plt.suptitle('Hopfield Network State')
     num_rows, num_cols = image.shape
 
     def format_coord(x, y):
@@ -170,27 +186,33 @@ def visualize_neurons(net):
     plt.draw()
 
 
-def visualize_before_after(original, degraded, restored):
+def visualize_before_after(original, degraded, restored, network):
     original = original.reshape(28, 28)
     degraded = degraded.reshape(28, 28)
     restored = restored.reshape(28, 28)
+    neurons = network.neuron_weights().reshape(28, 28)
     num_rows, num_cols = original.shape
 
     l2_norm = np.linalg.norm(original - restored)
 
-    fig, axis = plt.subplots(1, 3)
-    left, center, right = axis[0], axis[1], axis[2]
-    fig.tight_layout()
+    fig, axis = plt.subplots(2, 2)
+    top_left, top_right = axis[0, 0], axis[0, 1]
+    bottom_left, bottom_right = axis[1, 0], axis[1, 1]
+
+    plt.subplots_adjust(left=0.07, bottom=0.08, right=0.96, top=0.88, wspace=-0.30, hspace=0.28)
     plt.suptitle('L2 norm between original and restored: {:.2f}'.format(l2_norm))
 
-    left.title.set_text('Original')
-    left.imshow(original, interpolation='nearest')
+    top_left.title.set_text('Original')
+    top_left.imshow(original, interpolation='nearest')
 
-    center.title.set_text('Degraded')
-    center.imshow(degraded, interpolation='nearest')
+    top_right.title.set_text('Degraded')
+    top_right.imshow(degraded, interpolation='nearest')
 
-    right.title.set_text('Restored')
-    right.imshow(restored, interpolation='nearest')
+    bottom_left.title.set_text('Restored')
+    bottom_left.imshow(restored, interpolation='nearest')
+
+    bottom_right.title.set_text('Network State')
+    bottom_right.imshow(neurons, interpolation='nearest')
 
     def format_coord(x, y):
         col = int(x + 0.5)
@@ -201,9 +223,9 @@ def visualize_before_after(original, degraded, restored):
         else:
             return 'x=%1.4f, y=%1.4f' % (x, y)
 
-    left.format_coord = format_coord
-    center.format_coord = format_coord
-    right.format_coord = format_coord
+    top_left.format_coord = format_coord
+    top_right.format_coord = format_coord
+    bottom_left.format_coord = format_coord
 
     plt.draw()
 
@@ -219,16 +241,16 @@ def main():
     images = [mnist[i] for i in np.random.choice(range(len(mnist)), num_samples, replace=False)]
 
     # Initialize network
-    net = HopfieldNetwork()
-    net.train(np.array(images))
-    visualize_network(net)
-    visualize_neurons(net)
+    network = HopfieldNetwork()
+    network.train(np.array(images))
+    visualize_network(network)
+    visualize_neurons(network)
 
     # Test the network
     for original in images:
-        degraded = degrade(original, 0.05)
-        recovered = net.restore(degraded)
-        visualize_before_after(original, degraded, recovered)
+        degraded = degrade(original, 0.10)
+        recovered = network.restore(degraded, threshold=0)
+        visualize_before_after(original, degraded, recovered, network)
 
     # Display the plots
     plt.show()
