@@ -10,51 +10,60 @@ class HopfieldNetwork:
     def __init__(self, shape):
         self.seed = random.seed()
         self.shape = shape
+        self.state = None
         self.weights = None
         self.initialize_weights()
+        self.thresholds = None
+        self.initialize_thresholds()
 
     def initialize_weights(self):
         """Hopfield networks start with all weights set to zero."""
         self.weights = np.zeros((self.shape, self.shape), dtype=np.float64)
-        return self.weights
+
+    def initialize_thresholds(self):
+        self.thresholds = np.zeros(self.shape, dtype=np.float64)
 
     def neuron_weights(self):
         """Return a list containing each neuron's sum of weights.
         Used for visualizing the network."""
+        # TODO Remove this function.
         return np.array([sum(neuron_weights) for neuron_weights in self.weights])
 
-    def energy(self, s, θ):
+    def energy(self):
         """Compute the global energy of the input network state.
         Refer to https://en.wikipedia.org/wiki/Hopfield_network#Energy
         """
         w = self.weights
+        s = self.state
+        t = self.thresholds
+
         a = np.matmul(s.reshape(self.shape, 1), s.reshape(self.shape, 1).T)
         b = np.multiply(w, a)
-        c = np.dot(θ, s)
+        c = np.dot(t, s)
         energy = (-0.5 * np.sum(b)) - c
+
         return energy
 
-    def energy_unoptimized(self, active, threshold):
+    def energy_unoptimized(self):
         """Inefficient version the the energy function above.
         Uses individual multiplications instead of efficient matrix operations.
         """
-        num_neurons = len(active)
+        num_neurons = self.shape
         energy = 0.0
         for i in range(num_neurons):
-            energy += threshold[i] * active[i]
+            energy += self.thresholds[i] * self.state[i]
             for j in range(num_neurons):
-                energy += -0.5 * self.weights[i][j] * active[i] * active[j]
+                energy += -0.5 * self.weights[i][j] * self.state[i] * self.state[j]
         return energy
 
     def train_hebbian(self, images):
         """Train the Hopfield network using the Hebbian learning rule (1949).
         https://en.wikipedia.org/wiki/Hopfield_network#Hebbian_learning_rule_for_Hopfield_networks
         """
-        for image in images:
-            a = image.reshape((self.shape, 1))
+        for img in images:
+            a = img.reshape((self.shape, 1))
             b = a.T
             self.weights += np.dot(a, b)
-
         self.weights -= (np.identity(images[0].size) * images.shape[0])
         return self.weights
 
@@ -92,17 +101,17 @@ class HopfieldNetwork:
                 z = img[j] * sum([self.weights[i][k] * img[k] for k in range(n) if k not in [i, j]]) / n
                 self.weights[i][j] = w + x - y - z
 
-    def restore(self, x, threshold=0.0):
-        """Recover the original pattern of the degraded input pattern."""
-        active = np.copy(x)
-        num_neurons = active.size
-        threshold = [threshold] * num_neurons
+    def activate(self, i):
+        num_neurons = self.shape
+        weight_sum = 0.0
+        for j in range(num_neurons):
+            weight_sum += self.weights[i][j] * self.state[j]
+        self.state[i] = 1 if weight_sum > self.thresholds[i] else -1
 
-        def activate(neuron_i):
-            weight_sum = 0.0
-            for neuron_j in range(num_neurons):
-                weight_sum += self.weights[neuron_i][neuron_j] * active[neuron_j]
-            active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
+    def restore(self, degraded_image):
+        """Recover the original pattern of the degraded input pattern."""
+        self.state = np.copy(degraded_image)
+        num_neurons = self.shape
 
         # During each iteration: ensure each neuron is activated at least once
         iterations = 0
@@ -112,15 +121,15 @@ class HopfieldNetwork:
             random.shuffle(neurons)
             while neurons:
                 neuron = neurons.pop()
-                old_state = active[neuron]
-                activate(neuron)
-                new_state = active[neuron]
+                old_state = self.state[neuron]
+                self.activate(neuron)
+                new_state = self.state[neuron]
                 changed = True if old_state != new_state else changed
             iterations += 1
             if not changed:
                 break
 
-        recovered_image = active
+        recovered_image = np.copy(self.state)
         return recovered_image
 
 
@@ -327,7 +336,7 @@ def standard_run(num_samples):
     for original in images:
         degraded = degrade(original, noise=0.10)
         # degraded = chop(degraded)
-        recovered = network.restore(degraded, threshold=0.0)
+        recovered = network.restore(degraded)
         visualize_before_after(original, degraded, recovered, network)
 
     # Display the plots
@@ -355,7 +364,7 @@ def experiment_run(save_figures=False):
             for i, original in enumerate(images):
                 degraded = degrade(original, noise)
                 # degraded = chop(original)
-                recovered = network.restore(degraded, threshold=0)
+                recovered = network.restore(degraded)
                 recovered, l2_norm = image_norm(original, recovered)
                 title = 'Network of {:02d} images, experiment {:02d}, image {:02d}, noise: {:.2f}, L2-norm: {:.2f}' \
                     .format(num_samples, e + 1, i + 1, noise, l2_norm)
