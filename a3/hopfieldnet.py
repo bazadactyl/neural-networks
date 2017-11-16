@@ -102,6 +102,10 @@ class HopfieldNetwork:
                 self.weights[i][j] = w + x - y - z
 
     def activate(self, i):
+        weight_sum = np.dot(self.weights[i], self.state)
+        self.state[i] = 1 if weight_sum > self.thresholds[i] else -1
+
+    def activate_unoptimized(self, i):
         num_neurons = self.shape
         weight_sum = 0.0
         for j in range(num_neurons):
@@ -202,32 +206,6 @@ def flip(image):
     return flipped
 
 
-def invert(image):
-    """Replace all min. values with max. values in the 2D array and vice-versa."""
-    inverted = np.copy(image)
-    arr_min, arr_max = image.min(), image.max()
-    for i in range(image.shape[0]):
-        value = inverted[i]
-        if value == arr_max:
-            inverted[i] = arr_min
-        elif value == arr_min:
-            inverted[i] = arr_max
-        else:
-            continue
-    return inverted
-
-
-def image_norm(original, recovered):
-    """Invert the recovered image if it yields a lower L2 norm with the original image."""
-    inverted = invert(recovered)
-    norm_recovered = np.linalg.norm(original - recovered)
-    norm_inverted = np.linalg.norm(original - inverted)
-    if norm_inverted < norm_recovered:
-        return inverted, norm_inverted
-    else:
-        return recovered, norm_recovered
-
-
 def visualize_network(network, save=False):
     image = network.weights
     fig, ax = plt.subplots()
@@ -245,7 +223,11 @@ def visualize_network(network, save=False):
             return 'x=%1.4f, y=%1.4f' % (x, y)
 
     ax.format_coord = format_coord
-    plt.draw()
+    if save:
+        file_name = 'network.png'
+        fig.savefig(file_name)
+    else:
+        plt.draw()
 
 
 def visualize_neurons(network, title=None, save=False):
@@ -365,7 +347,7 @@ def experiment_run(save_figures=False):
                 degraded = degrade(original, noise)
                 # degraded = chop(original)
                 recovered = network.restore(degraded)
-                recovered, l2_norm = image_norm(original, recovered)
+                l2_norm = np.linalg.norm(original - recovered)
                 title = 'Network of {:02d} images, experiment {:02d}, image {:02d}, noise: {:.2f}, L2-norm: {:.2f}' \
                     .format(num_samples, e + 1, i + 1, noise, l2_norm)
                 visualize_before_after(original, degraded, recovered, network, title=title, save=save_figures)
@@ -389,8 +371,8 @@ def main():
         print("Usage:\n\tpython3 hopfieldnet.py <num-training-samples>")
         return
 
-    standard_run(num_samples)
-    # experiment_run(save_figures=False)
+    # standard_run(num_samples)
+    experiment_run(save_figures=False)
 
 
 if __name__ == '__main__':
