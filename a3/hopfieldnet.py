@@ -1,113 +1,123 @@
+import itertools
 import random
-import numpy as np
 import sys
-from sklearn.datasets import fetch_mldata
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.datasets import fetch_mldata
 
 
 class HopfieldNetwork:
-    def __init__(self, input_shape=784):
-        # Initialize variables
-        self._seed = random.seed()
-        self._shape = input_shape
+    def __init__(self, shape):
+        self.seed = random.seed()
+        self.shape = shape
+        self.weights = None
+        self.initialize_weights()
 
-        # Initialize weights
-        self._init_w()
-
-    # Initialize weights
-    # Note: Number of "synapses" = neurons^2 - neurons
-    #       Subtraction due to the fact that neurons cannot connect to themselves
-    def _init_w(self):
-        self._w = np.zeros((self._shape, self._shape), dtype=np.float64)
-        return self._w
+    def initialize_weights(self):
+        """Hopfield networks start with all weights set to zero."""
+        self.weights = np.zeros((self.shape, self.shape), dtype=np.float64)
+        return self.weights
 
     def neuron_weights(self):
-        return np.array([sum(neuron_weights) for neuron_weights in self._w])
+        """Return a list containing each neuron's sum of weights.
+        Used for visualizing the network."""
+        return np.array([sum(neuron_weights) for neuron_weights in self.weights])
 
-    def _global_energy(self, active, threshold):
-        num_neurons = len(active)
-        energy = 0.0
-        for neuron_i in range(num_neurons):
-            energy += threshold[neuron_i] * active[neuron_i]
-            for neuron_j in range(num_neurons):
-                energy += -0.5 * self._w[neuron_i][neuron_j] * active[neuron_i] * active[neuron_j]
+    def energy(self, s, θ):
+        """Compute the global energy of the input network state.
+        Refer to https://en.wikipedia.org/wiki/Hopfield_network#Energy
+        """
+        w = self.weights
+        a = np.matmul(s.reshape(self.shape, 1), s.reshape(self.shape, 1).T)
+        b = np.multiply(w, a)
+        c = np.dot(θ, s)
+        energy = (-0.5 * np.sum(b)) - c
         return energy
 
-    # Calculate quadratic energy function
-    def _qef(self):
-        pass
+    def energy_unoptimized(self, active, threshold):
+        """Inefficient version the the energy function above.
+        Uses individual multiplications instead of efficient matrix operations.
+        """
+        num_neurons = len(active)
+        energy = 0.0
+        for i in range(num_neurons):
+            energy += threshold[i] * active[i]
+            for j in range(num_neurons):
+                energy += -0.5 * self.weights[i][j] * active[i] * active[j]
+        return energy
 
-    def train(self, X):
-        for x in X:
-            a = x.reshape((784, 1))
+    def train_hebbian(self, images):
+        """Train the Hopfield network using the Hebbian learning rule (1949).
+        https://en.wikipedia.org/wiki/Hopfield_network#Hebbian_learning_rule_for_Hopfield_networks
+        """
+        for image in images:
+            a = image.reshape((self.shape, 1))
             b = a.T
-            self._w += np.dot(a, b)
+            self.weights += np.dot(a, b)
 
-        self._w -= (np.identity(x.size) * X.shape[0])
-        return self._w
+        self.weights -= (np.identity(images[0].size) * images.shape[0])
+        return self.weights
+
+    def train_hebbian_unoptimized(self, images):
+        """Inefficient version of the train_hebbian function.
+        Performs individual multiplications instead of efficient matrix operations."""
+        n = self.shape
+        for i, j in itertools.product(range(n), range(n)):
+            self.weights[i][j] = sum([img[i] * img[j] for img in images]) / n
+        return self.weights
+
+    def train_storkey(self, images):
+        """Train the Hopfield network using the Storkey learning rule (1997).
+        https://en.wikipedia.org/wiki/Hopfield_network#The_Storkey_learning_rule
+        """
+        n = self.shape
+        for img in images:
+            for i, j in itertools.product(range(n), range(n)):
+                wt = self.weights
+                w = wt[i][j]
+                x = img[i] * img[j]
+                y = img[i] * (np.dot(wt[j], img) - wt[j][i] * img[i] - wt[j][j] * img[j])
+                z = img[j] * (np.dot(wt[i], img) - wt[i][i] * img[i] - wt[i][j] * img[j])
+                wt[i][j] = w + ((x - y - z) / n)
+
+    def train_storkey_unoptimized(self, images):
+        """Inefficient version of the train_storkey function.
+        Performs individual multiplications instead of efficient matrix operations."""
+        n = self.shape
+        for img in images:
+            for i, j in itertools.product(range(n), range(n)):
+                w = self.weights[i][j]
+                x = img[i] * img[j] / n
+                y = img[i] * sum([self.weights[j][k] * img[k] for k in range(n) if k not in [i, j]]) / n
+                z = img[j] * sum([self.weights[i][k] * img[k] for k in range(n) if k not in [i, j]]) / n
+                self.weights[i][j] = w + x - y - z
 
     def restore(self, x, threshold=0.0):
-        image = np.copy(x)
-        num_neurons = image.size
-
+        """Recover the original pattern of the degraded input pattern."""
+        active = np.copy(x)
+        num_neurons = active.size
         threshold = [threshold] * num_neurons
-        active = np.random.randint(2, size=num_neurons)
-        for i, _ in enumerate(active):
-            active[i] = -1 if active[i] == 0 else 1
 
-        history = []
-        iteration = 0
-
-        # def activate(neuron_i):
-        #     weight_sum = 0.0
-        #     for neuron_j in range(num_neurons):
-        #         weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
-        #     active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
-
-        # def activate(neuron_i):
-        #     weight_sum = 0.0
-        #     for neuron_j in range(num_neurons):
-        #         weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
-        #     if weight_sum > threshold[neuron_i]:
-        #         active[neuron_i] = 1
-        #         for neuron_j in range(num_neurons):
-        #             if self._w[neuron_i][neuron_j] > 0:
-        #                 active[neuron_j] = 1
-        #     else:
-        #         active[neuron_i] = -1
-
-        def activate(neuron_i, recursive=False):
+        def activate(neuron_i):
             weight_sum = 0.0
             for neuron_j in range(num_neurons):
-                weight_sum += self._w[neuron_i][neuron_j] * active[neuron_j]
-            if weight_sum > threshold[neuron_i]:
-                active[neuron_i] = 1
-                if recursive:
-                    return
-                for neuron_j in range(num_neurons):
-                    if self._w[neuron_i][neuron_j] > 0 and neuron_j in remaining:
-                        activate(neuron_j, recursive=True)
-                        remaining.remove(neuron_j)
-            else:
-                active[neuron_i] = -1
+                weight_sum += self.weights[neuron_i][neuron_j] * active[neuron_j]
+            active[neuron_i] = 1 if weight_sum > threshold[neuron_i] else -1
 
-        # Ensure each neuron was activated at least once, in random order
-        remaining = list(range(num_neurons))
-        while remaining:
-            random_index = random.randint(0, len(remaining) - 1)
-            random_neuron = remaining.pop(random_index)
-            activate(random_neuron)
-
-        # Recover random bits of the original image until the network is stable
-        # Comment out to sacrifice accuracy for speed
-        while not stable(history):
-            random_neuron = random.choice(range(num_neurons))
-            activate(random_neuron)
-            iteration += 1
-            if iteration % 10 == 0:
-                energy = self._global_energy(active, threshold)
-                history.append(energy)
-            if iteration == 1000:
+        # During each iteration: ensure each neuron is activated at least once
+        iterations = 0
+        while iterations < 10:
+            changed = False
+            neurons = list(range(num_neurons))
+            random.shuffle(neurons)
+            while neurons:
+                neuron = neurons.pop()
+                old_state = active[neuron]
+                activate(neuron)
+                new_state = active[neuron]
+                changed = True if old_state != new_state else changed
+            iterations += 1
+            if not changed:
                 break
 
         recovered_image = active
@@ -115,41 +125,57 @@ class HopfieldNetwork:
 
 
 def load_mnist_data():
-    # Load and prepare data
+    """Use scikit-learn to load the MNIST dataset.
+    For our purposes we only need the 1's and 5's and require
+    that the images contain 1 and -1 values only."""
     mnist = fetch_mldata('MNIST original')
     data = mnist.data
     target = mnist.target
 
-    # Append only 1's and 5's from MNIST to X and y lists
-    X = []
-    y = []
-    [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 1 or target[i] == 5]
+    # Append only 1's and 5's from MNIST
+    images = []
+    labels = []
+    for i in range(len(data)):
+        if target[i] == 1 or target[i] == 5:
+            images.append(data[i])
+            labels.append(target[i])
 
-    # Convert X and y lists to numpy arrays
-    X, y = (np.asarray(X, dtype=np.float64), np.asarray(y, dtype=np.uint64))
+    # Convert lists to numpy arrays
+    images, labels = (np.asarray(images, dtype=np.float64), np.asarray(labels, dtype=np.uint64))
 
-    # Regularize the training examples
-    for row in range(X.shape[0]):
-        for col in range(X.shape[1]):
-            X[row][col] = 1.0 if X[row][col] > 0.0 else -1.0
+    # Regularize the training examples to 1-bit patterns
+    for row, col in itertools.product(range(images.shape[0]), range(images.shape[1])):
+        images[row][col] = 1.0 if images[row][col] > 0.0 else -1.0
 
-    return X, y
+    return images, labels
 
 
-def degrade(x, noise):
+def degrade(image, noise):
     """Flip random bits in the input image.
-    :param x: the input image
+    :param image: the input image
     :param noise: percentage of bits to flip
     """
-    image = np.copy(x)
-    pixels_to_alter = round(image.size * noise)
+    num_pixels = image.size
+    degraded = np.copy(image)
+    pixels_to_alter = round(num_pixels * noise)
     for _ in range(pixels_to_alter):
-        pixel = random.choice(range(x.size))
-        image[pixel] = 1 if image[pixel] == -1 else -1
-    return image
+        pixel = random.choice(range(num_pixels))
+        degraded[pixel] = 1 if degraded[pixel] == -1 else -1
+    return degraded
 
 
-def stable(energy_history, check_last=5):
+def chop(image):
+    """Clear the bottom half of the image's pixels.
+    The affected pixels' values are set to the minimum pixel value of the image.
+    """
+    image = np.copy(image).reshape(28, 28)
+    min_value = image.min()
+    for i, j in itertools.product(range(14, 28), range(0, 28)):
+        image[i][j] = min_value
+    return image.reshape(784,)
+
+
+def stable(energy_history, check_last=2):
     """Check if the Hopfield network has stabilized based upon recent energy states."""
     if len(energy_history) < check_last:
         return False
@@ -193,8 +219,8 @@ def image_norm(original, recovered):
         return recovered, norm_recovered
 
 
-def visualize_network(net):
-    image = net._w
+def visualize_network(network, save=False):
+    image = network.weights
     fig, ax = plt.subplots()
     ax.imshow(image, interpolation='nearest')
     plt.suptitle('Hopfield Network Weights')
@@ -213,8 +239,8 @@ def visualize_network(net):
     plt.draw()
 
 
-def visualize_neurons(network, title=None):
-    weight_sums = [sum(neuron_weights) for neuron_weights in network._w]
+def visualize_neurons(network, title=None, save=False):
+    weight_sums = [sum(neuron_weights) for neuron_weights in network.weights]
     image = np.array(weight_sums).reshape(28, 28)
     image = flip(image)
 
@@ -234,14 +260,14 @@ def visualize_neurons(network, title=None):
 
     ax.format_coord = format_coord
 
-    if title:
+    if title and save:
         file_name = '{}.png'.format(title.replace(' ', '-'))
         fig.savefig(file_name)
     else:
         plt.draw()
 
 
-def visualize_before_after(original, degraded, restored, network, title=None):
+def visualize_before_after(original, degraded, restored, network, title=None, save=False):
     original = original.reshape(28, 28)
     degraded = degraded.reshape(28, 28)
     restored = restored.reshape(28, 28)
@@ -280,7 +306,7 @@ def visualize_before_after(original, degraded, restored, network, title=None):
     top_right.format_coord = format_coord
     bottom_left.format_coord = format_coord
 
-    if title:
+    if title and save:
         file_name = '{}.png'.format(title.replace(' ', '-'))
         fig.savefig(file_name)
     else:
@@ -292,25 +318,26 @@ def standard_run(num_samples):
     images = [mnist[i] for i in np.random.choice(range(len(mnist)), num_samples, replace=False)]
 
     # Initialize network
-    network = HopfieldNetwork()
-    network.train(np.array(images))
+    network = HopfieldNetwork(shape=784)
+    network.train_storkey(np.array(images))
     visualize_network(network)
     visualize_neurons(network)
 
     # Test the network
     for original in images:
-        degraded = degrade(original, 0.10)
-        recovered = network.restore(degraded, threshold=0)
+        degraded = degrade(original, noise=0.10)
+        # degraded = chop(degraded)
+        recovered = network.restore(degraded, threshold=0.0)
         visualize_before_after(original, degraded, recovered, network)
 
     # Display the plots
     plt.show()
 
 
-def experiment_run():
+def experiment_run(save_figures=False):
     mnist, _ = load_mnist_data()
-    experiments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    repeat = 30
+    experiments = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    repeat = 10
     noise = 0.20
 
     for num_samples in experiments:
@@ -318,20 +345,21 @@ def experiment_run():
         total_correct = 0
         for e in range(repeat):
             images = [mnist[i] for i in np.random.choice(range(len(mnist)), num_samples, replace=False)]
-            network = HopfieldNetwork()
-            network.train(np.array(images))
+            network = HopfieldNetwork(shape=784)
+            network.train_storkey(np.array(images))
             visualize_neurons(network, title='Network storing {:02d} images (experiment #{:02d})'
-                              .format(num_samples, e + 1))
+                              .format(num_samples, e + 1), save=save_figures)
             correct = 0
             threshold = 10
 
             for i, original in enumerate(images):
                 degraded = degrade(original, noise)
+                # degraded = chop(original)
                 recovered = network.restore(degraded, threshold=0)
                 recovered, l2_norm = image_norm(original, recovered)
                 title = 'Network of {:02d} images, experiment {:02d}, image {:02d}, noise: {:.2f}, L2-norm: {:.2f}' \
                     .format(num_samples, e + 1, i + 1, noise, l2_norm)
-                visualize_before_after(original, degraded, recovered, network, title=title)
+                visualize_before_after(original, degraded, recovered, network, title=title, save=save_figures)
                 correct += (1 if l2_norm < threshold else 0)
 
             total_correct += correct
@@ -352,8 +380,8 @@ def main():
         print("Usage:\n\tpython3 hopfieldnet.py <num-training-samples>")
         return
 
-    # standard_run(num_samples)
-    experiment_run()
+    standard_run(num_samples)
+    # experiment_run(save_figures=False)
 
 
 if __name__ == '__main__':
