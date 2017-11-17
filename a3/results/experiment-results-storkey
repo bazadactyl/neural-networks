@@ -1,0 +1,459 @@
+Networks of 1 images:
+	Experiment 01: 1 / 1 correct - 100.00% accuracy
+	Experiment 02: 1 / 1 correct - 100.00% accuracy
+	Experiment 03: 1 / 1 correct - 100.00% accuracy
+	Experiment 04: 1 / 1 correct - 100.00% accuracy
+	Experiment 05: 1 / 1 correct - 100.00% accuracy
+	Experiment 06: 1 / 1 correct - 100.00% accuracy
+	Experiment 07: 1 / 1 correct - 100.00% accuracy
+	Experiment 08: 1 / 1 correct - 100.00% accuracy
+	Experiment 09: 1 / 1 correct - 100.00% accuracy
+	Experiment 10: 1 / 1 correct - 100.00% accuracy
+	Experiment 11: 1 / 1 correct - 100.00% accuracy
+	Experiment 12: 1 / 1 correct - 100.00% accuracy
+	Experiment 13: 1 / 1 correct - 100.00% accuracy
+	Experiment 14: 1 / 1 correct - 100.00% accuracy
+	Experiment 15: 1 / 1 correct - 100.00% accuracy
+	Experiment 16: 1 / 1 correct - 100.00% accuracy
+	Experiment 17: 1 / 1 correct - 100.00% accuracy
+	Experiment 18: 1 / 1 correct - 100.00% accuracy
+	Experiment 19: 1 / 1 correct - 100.00% accuracy
+	Experiment 20: 1 / 1 correct - 100.00% accuracy
+	Accuracy for 01-image networks: 20 / 20 correct - 100.00% accuracy
+
+Networks of 2 images:
+	Experiment 01: 2 / 2 correct - 100.00% accuracy
+	Experiment 02: 2 / 2 correct - 100.00% accuracy
+	Experiment 03: 2 / 2 correct - 100.00% accuracy
+	Experiment 04: 2 / 2 correct - 100.00% accuracy
+	Experiment 05: 1 / 2 correct - 50.00% accuracy
+	Experiment 06: 2 / 2 correct - 100.00% accuracy
+	Experiment 07: 2 / 2 correct - 100.00% accuracy
+	Experiment 08: 2 / 2 correct - 100.00% accuracy
+	Experiment 09: 2 / 2 correct - 100.00% accuracy
+	Experiment 10: 2 / 2 correct - 100.00% accuracy
+	Experiment 11: 2 / 2 correct - 100.00% accuracy
+	Experiment 12: 2 / 2 correct - 100.00% accuracy
+	Experiment 13: 2 / 2 correct - 100.00% accuracy
+	Experiment 14: 1 / 2 correct - 50.00% accuracy
+	Experiment 15: 2 / 2 correct - 100.00% accuracy
+	Experiment 16: 2 / 2 correct - 100.00% accuracy
+	Experiment 17: 2 / 2 correct - 100.00% accuracy
+	Experiment 18: 2 / 2 correct - 100.00% accuracy
+	Experiment 19: 2 / 2 correct - 100.00% accuracy
+	Experiment 20: 1 / 2 correct - 50.00% accuracy
+	Accuracy for 02-image networks: 37 / 40 correct - 92.50% accuracy
+
+Networks of 3 images:
+	Experiment 01: 2 / 3 correct - 66.67% accuracy
+	Experiment 02: 2 / 3 correct - 66.67% accuracy
+	Experiment 03: 3 / 3 correct - 100.00% accuracy
+	Experiment 04: 1 / 3 correct - 33.33% accuracy
+	Experiment 05: 2 / 3 correct - 66.67% accuracy
+	Experiment 06: 2 / 3 correct - 66.67% accuracy
+	Experiment 07: 2 / 3 correct - 66.67% accuracy
+	Experiment 08: 2 / 3 correct - 66.67% accuracy
+	Experiment 09: 2 / 3 correct - 66.67% accuracy
+	Experiment 10: 2 / 3 correct - 66.67% accuracy
+	Experiment 11: 2 / 3 correct - 66.67% accuracy
+	Experiment 12: 2 / 3 correct - 66.67% accuracy
+	Experiment 13: 2 / 3 correct - 66.67% accuracy
+	Experiment 14: 2 / 3 correct - 66.67% accuracy
+	Experiment 15: 3 / 3 correct - 100.00% accuracy
+	Experiment 16: 2 / 3 correct - 66.67% accuracy
+	Experiment 17: 1 / 3 correct - 33.33% accuracy
+	Experiment 18: 2 / 3 correct - 66.67% accuracy
+	Experiment 19: 2 / 3 correct - 66.67% accuracy
+	Experiment 20: 3 / 3 correct - 100.00% accuracy
+	Accuracy for 03-image networks: 41 / 60 correct - 68.33% accuracy
+
+Networks of 4 images:
+	Experiment 01: 3 / 4 correct - 75.00% accuracy
+	Experiment 02: 3 / 4 correct - 75.00% accuracy
+	Experiment 03: 1 / 4 correct - 25.00% accuracy
+	Experiment 04: 2 / 4 correct - 50.00% accuracy
+	Experiment 05: 2 / 4 correct - 50.00% accuracy
+	Experiment 06: 2 / 4 correct - 50.00% accuracy
+	Experiment 07: 2 / 4 correct - 50.00% accuracy
+	Experiment 08: 2 / 4 correct - 50.00% accuracy
+	Experiment 09: 2 / 4 correct - 50.00% accuracy
+	Experiment 10: 3 / 4 correct - 75.00% accuracy
+	Experiment 11: 1 / 4 correct - 25.00% accuracy
+	Experiment 12: 2 / 4 correct - 50.00% accuracy
+	Experiment 13: 1 / 4 correct - 25.00% accuracy
+	Experiment 14: 3 / 4 correct - 75.00% accuracy
+	Experiment 15: 2 / 4 correct - 50.00% accuracy
+	Experiment 16: 2 / 4 correct - 50.00% accuracy
+	Experiment 17: 2 / 4 correct - 50.00% accuracy
+	Experiment 18: 3 / 4 correct - 75.00% accuracy
+	Experiment 19: 2 / 4 correct - 50.00% accuracy
+	Experiment 20: 1 / 4 correct - 25.00% accuracy
+	Accuracy for 04-image networks: 41 / 80 correct - 51.25% accuracy
+
+Networks of 5 images:
+	Experiment 01: 1 / 5 correct - 20.00% accuracy
+	Experiment 02: 2 / 5 correct - 40.00% accuracy
+	Experiment 03: 1 / 5 correct - 20.00% accuracy
+	Experiment 04: 3 / 5 correct - 60.00% accuracy
+	Experiment 05: 2 / 5 correct - 40.00% accuracy
+	Experiment 06: 2 / 5 correct - 40.00% accuracy
+	Experiment 07: 3 / 5 correct - 60.00% accuracy
+	Experiment 08: 3 / 5 correct - 60.00% accuracy
+	Experiment 09: 2 / 5 correct - 40.00% accuracy
+	Experiment 10: 2 / 5 correct - 40.00% accuracy
+	Experiment 11: 3 / 5 correct - 60.00% accuracy
+	Experiment 12: 2 / 5 correct - 40.00% accuracy
+	Experiment 13: 2 / 5 correct - 40.00% accuracy
+	Experiment 14: 3 / 5 correct - 60.00% accuracy
+	Experiment 15: 2 / 5 correct - 40.00% accuracy
+	Experiment 16: 2 / 5 correct - 40.00% accuracy
+	Experiment 17: 2 / 5 correct - 40.00% accuracy
+	Experiment 18: 2 / 5 correct - 40.00% accuracy
+	Experiment 19: 2 / 5 correct - 40.00% accuracy
+	Experiment 20: 3 / 5 correct - 60.00% accuracy
+	Accuracy for 05-image networks: 44 / 100 correct - 44.00% accuracy
+
+Networks of 6 images:
+	Experiment 01: 1 / 6 correct - 16.67% accuracy
+	Experiment 02: 2 / 6 correct - 33.33% accuracy
+	Experiment 03: 3 / 6 correct - 50.00% accuracy
+	Experiment 04: 1 / 6 correct - 16.67% accuracy
+	Experiment 05: 3 / 6 correct - 50.00% accuracy
+	Experiment 06: 2 / 6 correct - 33.33% accuracy
+	Experiment 07: 2 / 6 correct - 33.33% accuracy
+	Experiment 08: 2 / 6 correct - 33.33% accuracy
+	Experiment 09: 4 / 6 correct - 66.67% accuracy
+	Experiment 10: 2 / 6 correct - 33.33% accuracy
+	Experiment 11: 2 / 6 correct - 33.33% accuracy
+	Experiment 12: 4 / 6 correct - 66.67% accuracy
+	Experiment 13: 1 / 6 correct - 16.67% accuracy
+	Experiment 14: 2 / 6 correct - 33.33% accuracy
+	Experiment 15: 3 / 6 correct - 50.00% accuracy
+	Experiment 16: 2 / 6 correct - 33.33% accuracy
+	Experiment 17: 2 / 6 correct - 33.33% accuracy
+	Experiment 18: 2 / 6 correct - 33.33% accuracy
+	Experiment 19: 2 / 6 correct - 33.33% accuracy
+	Experiment 20: 3 / 6 correct - 50.00% accuracy
+	Accuracy for 06-image networks: 45 / 120 correct - 37.50% accuracy
+
+Networks of 7 images:
+	Experiment 01: 3 / 7 correct - 42.86% accuracy
+	Experiment 02: 3 / 7 correct - 42.86% accuracy
+	Experiment 03: 2 / 7 correct - 28.57% accuracy
+	Experiment 04: 3 / 7 correct - 42.86% accuracy
+	Experiment 05: 2 / 7 correct - 28.57% accuracy
+	Experiment 06: 2 / 7 correct - 28.57% accuracy
+	Experiment 07: 2 / 7 correct - 28.57% accuracy
+	Experiment 08: 2 / 7 correct - 28.57% accuracy
+	Experiment 09: 2 / 7 correct - 28.57% accuracy
+	Experiment 10: 2 / 7 correct - 28.57% accuracy
+	Experiment 11: 3 / 7 correct - 42.86% accuracy
+	Experiment 12: 2 / 7 correct - 28.57% accuracy
+	Experiment 13: 3 / 7 correct - 42.86% accuracy
+	Experiment 14: 3 / 7 correct - 42.86% accuracy
+	Experiment 15: 2 / 7 correct - 28.57% accuracy
+	Experiment 16: 2 / 7 correct - 28.57% accuracy
+	Experiment 17: 2 / 7 correct - 28.57% accuracy
+	Experiment 18: 2 / 7 correct - 28.57% accuracy
+	Experiment 19: 2 / 7 correct - 28.57% accuracy
+	Experiment 20: 4 / 7 correct - 57.14% accuracy
+	Accuracy for 07-image networks: 48 / 140 correct - 34.29% accuracy
+
+Networks of 8 images:
+	Experiment 01: 3 / 8 correct - 37.50% accuracy
+	Experiment 02: 1 / 8 correct - 12.50% accuracy
+	Experiment 03: 3 / 8 correct - 37.50% accuracy
+	Experiment 04: 4 / 8 correct - 50.00% accuracy
+	Experiment 05: 4 / 8 correct - 50.00% accuracy
+	Experiment 06: 2 / 8 correct - 25.00% accuracy
+	Experiment 07: 3 / 8 correct - 37.50% accuracy
+	Experiment 08: 3 / 8 correct - 37.50% accuracy
+	Experiment 09: 3 / 8 correct - 37.50% accuracy
+	Experiment 10: 3 / 8 correct - 37.50% accuracy
+	Experiment 11: 2 / 8 correct - 25.00% accuracy
+	Experiment 12: 5 / 8 correct - 62.50% accuracy
+	Experiment 13: 2 / 8 correct - 25.00% accuracy
+	Experiment 14: 1 / 8 correct - 12.50% accuracy
+	Experiment 15: 3 / 8 correct - 37.50% accuracy
+	Experiment 16: 3 / 8 correct - 37.50% accuracy
+	Experiment 17: 1 / 8 correct - 12.50% accuracy
+	Experiment 18: 2 / 8 correct - 25.00% accuracy
+	Experiment 19: 2 / 8 correct - 25.00% accuracy
+	Experiment 20: 2 / 8 correct - 25.00% accuracy
+	Accuracy for 08-image networks: 52 / 160 correct - 32.50% accuracy
+
+Networks of 9 images:
+	Experiment 01: 3 / 9 correct - 33.33% accuracy
+	Experiment 02: 2 / 9 correct - 22.22% accuracy
+	Experiment 03: 2 / 9 correct - 22.22% accuracy
+	Experiment 04: 2 / 9 correct - 22.22% accuracy
+	Experiment 05: 2 / 9 correct - 22.22% accuracy
+	Experiment 06: 3 / 9 correct - 33.33% accuracy
+	Experiment 07: 2 / 9 correct - 22.22% accuracy
+	Experiment 08: 3 / 9 correct - 33.33% accuracy
+	Experiment 09: 2 / 9 correct - 22.22% accuracy
+	Experiment 10: 1 / 9 correct - 11.11% accuracy
+	Experiment 11: 3 / 9 correct - 33.33% accuracy
+	Experiment 12: 4 / 9 correct - 44.44% accuracy
+	Experiment 13: 3 / 9 correct - 33.33% accuracy
+	Experiment 14: 3 / 9 correct - 33.33% accuracy
+	Experiment 15: 3 / 9 correct - 33.33% accuracy
+	Experiment 16: 2 / 9 correct - 22.22% accuracy
+	Experiment 17: 3 / 9 correct - 33.33% accuracy
+	Experiment 18: 2 / 9 correct - 22.22% accuracy
+	Experiment 19: 3 / 9 correct - 33.33% accuracy
+	Experiment 20: 2 / 9 correct - 22.22% accuracy
+	Accuracy for 09-image networks: 50 / 180 correct - 27.78% accuracy
+
+Networks of 10 images:
+	Experiment 01: 3 / 10 correct - 30.00% accuracy
+	Experiment 02: 3 / 10 correct - 30.00% accuracy
+	Experiment 03: 2 / 10 correct - 20.00% accuracy
+	Experiment 04: 1 / 10 correct - 10.00% accuracy
+	Experiment 05: 1 / 10 correct - 10.00% accuracy
+	Experiment 06: 3 / 10 correct - 30.00% accuracy
+	Experiment 07: 1 / 10 correct - 10.00% accuracy
+	Experiment 08: 3 / 10 correct - 30.00% accuracy
+	Experiment 09: 4 / 10 correct - 40.00% accuracy
+	Experiment 10: 3 / 10 correct - 30.00% accuracy
+	Experiment 11: 2 / 10 correct - 20.00% accuracy
+	Experiment 12: 4 / 10 correct - 40.00% accuracy
+	Experiment 13: 2 / 10 correct - 20.00% accuracy
+	Experiment 14: 3 / 10 correct - 30.00% accuracy
+	Experiment 15: 2 / 10 correct - 20.00% accuracy
+	Experiment 16: 3 / 10 correct - 30.00% accuracy
+	Experiment 17: 2 / 10 correct - 20.00% accuracy
+	Experiment 18: 4 / 10 correct - 40.00% accuracy
+	Experiment 19: 2 / 10 correct - 20.00% accuracy
+	Experiment 20: 2 / 10 correct - 20.00% accuracy
+	Accuracy for 10-image networks: 50 / 200 correct - 25.00% accuracy
+
+Networks of 11 images:
+	Experiment 01: 3 / 11 correct - 27.27% accuracy
+	Experiment 02: 2 / 11 correct - 18.18% accuracy
+	Experiment 03: 4 / 11 correct - 36.36% accuracy
+	Experiment 04: 2 / 11 correct - 18.18% accuracy
+	Experiment 05: 1 / 11 correct - 9.09% accuracy
+	Experiment 06: 4 / 11 correct - 36.36% accuracy
+	Experiment 07: 4 / 11 correct - 36.36% accuracy
+	Experiment 08: 2 / 11 correct - 18.18% accuracy
+	Experiment 09: 5 / 11 correct - 45.45% accuracy
+	Experiment 10: 2 / 11 correct - 18.18% accuracy
+	Experiment 11: 4 / 11 correct - 36.36% accuracy
+	Experiment 12: 3 / 11 correct - 27.27% accuracy
+	Experiment 13: 2 / 11 correct - 18.18% accuracy
+	Experiment 14: 4 / 11 correct - 36.36% accuracy
+	Experiment 15: 3 / 11 correct - 27.27% accuracy
+	Experiment 16: 1 / 11 correct - 9.09% accuracy
+	Experiment 17: 1 / 11 correct - 9.09% accuracy
+	Experiment 18: 2 / 11 correct - 18.18% accuracy
+	Experiment 19: 2 / 11 correct - 18.18% accuracy
+	Experiment 20: 3 / 11 correct - 27.27% accuracy
+	Accuracy for 11-image networks: 54 / 220 correct - 24.55% accuracy
+
+Networks of 12 images:
+	Experiment 01: 2 / 12 correct - 16.67% accuracy
+	Experiment 02: 3 / 12 correct - 25.00% accuracy
+	Experiment 03: 2 / 12 correct - 16.67% accuracy
+	Experiment 04: 1 / 12 correct - 8.33% accuracy
+	Experiment 05: 3 / 12 correct - 25.00% accuracy
+	Experiment 06: 3 / 12 correct - 25.00% accuracy
+	Experiment 07: 2 / 12 correct - 16.67% accuracy
+	Experiment 08: 7 / 12 correct - 58.33% accuracy
+	Experiment 09: 3 / 12 correct - 25.00% accuracy
+	Experiment 10: 4 / 12 correct - 33.33% accuracy
+	Experiment 11: 3 / 12 correct - 25.00% accuracy
+	Experiment 12: 3 / 12 correct - 25.00% accuracy
+	Experiment 13: 2 / 12 correct - 16.67% accuracy
+	Experiment 14: 2 / 12 correct - 16.67% accuracy
+	Experiment 15: 3 / 12 correct - 25.00% accuracy
+	Experiment 16: 4 / 12 correct - 33.33% accuracy
+	Experiment 17: 2 / 12 correct - 16.67% accuracy
+	Experiment 18: 3 / 12 correct - 25.00% accuracy
+	Experiment 19: 4 / 12 correct - 33.33% accuracy
+	Experiment 20: 4 / 12 correct - 33.33% accuracy
+	Accuracy for 12-image networks: 60 / 240 correct - 25.00% accuracy
+
+Networks of 13 images:
+	Experiment 01: 3 / 13 correct - 23.08% accuracy
+	Experiment 02: 1 / 13 correct - 7.69% accuracy
+	Experiment 03: 5 / 13 correct - 38.46% accuracy
+	Experiment 04: 2 / 13 correct - 15.38% accuracy
+	Experiment 05: 4 / 13 correct - 30.77% accuracy
+	Experiment 06: 1 / 13 correct - 7.69% accuracy
+	Experiment 07: 3 / 13 correct - 23.08% accuracy
+	Experiment 08: 3 / 13 correct - 23.08% accuracy
+	Experiment 09: 2 / 13 correct - 15.38% accuracy
+	Experiment 10: 3 / 13 correct - 23.08% accuracy
+	Experiment 11: 2 / 13 correct - 15.38% accuracy
+	Experiment 12: 4 / 13 correct - 30.77% accuracy
+	Experiment 13: 2 / 13 correct - 15.38% accuracy
+	Experiment 14: 4 / 13 correct - 30.77% accuracy
+	Experiment 15: 3 / 13 correct - 23.08% accuracy
+	Experiment 16: 5 / 13 correct - 38.46% accuracy
+	Experiment 17: 5 / 13 correct - 38.46% accuracy
+	Experiment 18: 1 / 13 correct - 7.69% accuracy
+	Experiment 19: 3 / 13 correct - 23.08% accuracy
+	Experiment 20: 4 / 13 correct - 30.77% accuracy
+	Accuracy for 13-image networks: 60 / 260 correct - 23.08% accuracy
+
+Networks of 14 images:
+	Experiment 01: 2 / 14 correct - 14.29% accuracy
+	Experiment 02: 2 / 14 correct - 14.29% accuracy
+	Experiment 03: 4 / 14 correct - 28.57% accuracy
+	Experiment 04: 3 / 14 correct - 21.43% accuracy
+	Experiment 05: 3 / 14 correct - 21.43% accuracy
+	Experiment 06: 3 / 14 correct - 21.43% accuracy
+	Experiment 07: 2 / 14 correct - 14.29% accuracy
+	Experiment 08: 3 / 14 correct - 21.43% accuracy
+	Experiment 09: 2 / 14 correct - 14.29% accuracy
+	Experiment 10: 6 / 14 correct - 42.86% accuracy
+	Experiment 11: 2 / 14 correct - 14.29% accuracy
+	Experiment 12: 3 / 14 correct - 21.43% accuracy
+	Experiment 13: 2 / 14 correct - 14.29% accuracy
+	Experiment 14: 3 / 14 correct - 21.43% accuracy
+	Experiment 15: 5 / 14 correct - 35.71% accuracy
+	Experiment 16: 1 / 14 correct - 7.14% accuracy
+	Experiment 17: 2 / 14 correct - 14.29% accuracy
+	Experiment 18: 3 / 14 correct - 21.43% accuracy
+	Experiment 19: 3 / 14 correct - 21.43% accuracy
+	Experiment 20: 4 / 14 correct - 28.57% accuracy
+	Accuracy for 14-image networks: 58 / 280 correct - 20.71% accuracy
+
+Networks of 15 images:
+	Experiment 01: 5 / 15 correct - 33.33% accuracy
+	Experiment 02: 4 / 15 correct - 26.67% accuracy
+	Experiment 03: 4 / 15 correct - 26.67% accuracy
+	Experiment 04: 5 / 15 correct - 33.33% accuracy
+	Experiment 05: 3 / 15 correct - 20.00% accuracy
+	Experiment 06: 2 / 15 correct - 13.33% accuracy
+	Experiment 07: 3 / 15 correct - 20.00% accuracy
+	Experiment 08: 2 / 15 correct - 13.33% accuracy
+	Experiment 09: 3 / 15 correct - 20.00% accuracy
+	Experiment 10: 3 / 15 correct - 20.00% accuracy
+	Experiment 11: 3 / 15 correct - 20.00% accuracy
+	Experiment 12: 2 / 15 correct - 13.33% accuracy
+	Experiment 13: 3 / 15 correct - 20.00% accuracy
+	Experiment 14: 2 / 15 correct - 13.33% accuracy
+	Experiment 15: 2 / 15 correct - 13.33% accuracy
+	Experiment 16: 3 / 15 correct - 20.00% accuracy
+	Experiment 17: 5 / 15 correct - 33.33% accuracy
+	Experiment 18: 3 / 15 correct - 20.00% accuracy
+	Experiment 19: 2 / 15 correct - 13.33% accuracy
+	Experiment 20: 4 / 15 correct - 26.67% accuracy
+	Accuracy for 15-image networks: 63 / 300 correct - 21.00% accuracy
+
+Networks of 16 images:
+	Experiment 01: 1 / 16 correct - 6.25% accuracy
+	Experiment 02: 3 / 16 correct - 18.75% accuracy
+	Experiment 03: 5 / 16 correct - 31.25% accuracy
+	Experiment 04: 4 / 16 correct - 25.00% accuracy
+	Experiment 05: 7 / 16 correct - 43.75% accuracy
+	Experiment 06: 2 / 16 correct - 12.50% accuracy
+	Experiment 07: 2 / 16 correct - 12.50% accuracy
+	Experiment 08: 8 / 16 correct - 50.00% accuracy
+	Experiment 09: 3 / 16 correct - 18.75% accuracy
+	Experiment 10: 3 / 16 correct - 18.75% accuracy
+	Experiment 11: 3 / 16 correct - 18.75% accuracy
+	Experiment 12: 5 / 16 correct - 31.25% accuracy
+	Experiment 13: 5 / 16 correct - 31.25% accuracy
+	Experiment 14: 2 / 16 correct - 12.50% accuracy
+	Experiment 15: 3 / 16 correct - 18.75% accuracy
+	Experiment 16: 3 / 16 correct - 18.75% accuracy
+	Experiment 17: 3 / 16 correct - 18.75% accuracy
+	Experiment 18: 2 / 16 correct - 12.50% accuracy
+	Experiment 19: 3 / 16 correct - 18.75% accuracy
+	Experiment 20: 2 / 16 correct - 12.50% accuracy
+	Accuracy for 16-image networks: 69 / 320 correct - 21.56% accuracy
+
+Networks of 17 images:
+	Experiment 01: 2 / 17 correct - 11.76% accuracy
+	Experiment 02: 4 / 17 correct - 23.53% accuracy
+	Experiment 03: 3 / 17 correct - 17.65% accuracy
+	Experiment 04: 2 / 17 correct - 11.76% accuracy
+	Experiment 05: 2 / 17 correct - 11.76% accuracy
+	Experiment 06: 3 / 17 correct - 17.65% accuracy
+	Experiment 07: 2 / 17 correct - 11.76% accuracy
+	Experiment 08: 4 / 17 correct - 23.53% accuracy
+	Experiment 09: 4 / 17 correct - 23.53% accuracy
+	Experiment 10: 2 / 17 correct - 11.76% accuracy
+	Experiment 11: 3 / 17 correct - 17.65% accuracy
+	Experiment 12: 3 / 17 correct - 17.65% accuracy
+	Experiment 13: 9 / 17 correct - 52.94% accuracy
+	Experiment 14: 2 / 17 correct - 11.76% accuracy
+	Experiment 15: 3 / 17 correct - 17.65% accuracy
+	Experiment 16: 2 / 17 correct - 11.76% accuracy
+	Experiment 17: 1 / 17 correct - 5.88% accuracy
+	Experiment 18: 1 / 17 correct - 5.88% accuracy
+	Experiment 19: 4 / 17 correct - 23.53% accuracy
+	Experiment 20: 4 / 17 correct - 23.53% accuracy
+	Accuracy for 17-image networks: 60 / 340 correct - 17.65% accuracy
+
+Networks of 18 images:
+	Experiment 01: 2 / 18 correct - 11.11% accuracy
+	Experiment 02: 1 / 18 correct - 5.56% accuracy
+	Experiment 03: 3 / 18 correct - 16.67% accuracy
+	Experiment 04: 2 / 18 correct - 11.11% accuracy
+	Experiment 05: 2 / 18 correct - 11.11% accuracy
+	Experiment 06: 4 / 18 correct - 22.22% accuracy
+	Experiment 07: 2 / 18 correct - 11.11% accuracy
+	Experiment 08: 7 / 18 correct - 38.89% accuracy
+	Experiment 09: 3 / 18 correct - 16.67% accuracy
+	Experiment 10: 2 / 18 correct - 11.11% accuracy
+	Experiment 11: 2 / 18 correct - 11.11% accuracy
+	Experiment 12: 5 / 18 correct - 27.78% accuracy
+	Experiment 13: 2 / 18 correct - 11.11% accuracy
+	Experiment 14: 1 / 18 correct - 5.56% accuracy
+	Experiment 15: 1 / 18 correct - 5.56% accuracy
+	Experiment 16: 4 / 18 correct - 22.22% accuracy
+	Experiment 17: 1 / 18 correct - 5.56% accuracy
+	Experiment 18: 3 / 18 correct - 16.67% accuracy
+	Experiment 19: 2 / 18 correct - 11.11% accuracy
+	Experiment 20: 3 / 18 correct - 16.67% accuracy
+	Accuracy for 18-image networks: 52 / 360 correct - 14.44% accuracy
+
+Networks of 19 images:
+	Experiment 01: 2 / 19 correct - 10.53% accuracy
+	Experiment 02: 3 / 19 correct - 15.79% accuracy
+	Experiment 03: 4 / 19 correct - 21.05% accuracy
+	Experiment 04: 3 / 19 correct - 15.79% accuracy
+	Experiment 05: 1 / 19 correct - 5.26% accuracy
+	Experiment 06: 3 / 19 correct - 15.79% accuracy
+	Experiment 07: 5 / 19 correct - 26.32% accuracy
+	Experiment 08: 2 / 19 correct - 10.53% accuracy
+	Experiment 09: 6 / 19 correct - 31.58% accuracy
+	Experiment 10: 4 / 19 correct - 21.05% accuracy
+	Experiment 11: 5 / 19 correct - 26.32% accuracy
+	Experiment 12: 3 / 19 correct - 15.79% accuracy
+	Experiment 13: 3 / 19 correct - 15.79% accuracy
+	Experiment 14: 4 / 19 correct - 21.05% accuracy
+	Experiment 15: 3 / 19 correct - 15.79% accuracy
+	Experiment 16: 2 / 19 correct - 10.53% accuracy
+	Experiment 17: 2 / 19 correct - 10.53% accuracy
+	Experiment 18: 4 / 19 correct - 21.05% accuracy
+	Experiment 19: 2 / 19 correct - 10.53% accuracy
+	Experiment 20: 2 / 19 correct - 10.53% accuracy
+	Accuracy for 19-image networks: 63 / 380 correct - 16.58% accuracy
+
+Networks of 20 images:
+	Experiment 01: 4 / 20 correct - 20.00% accuracy
+	Experiment 02: 2 / 20 correct - 10.00% accuracy
+	Experiment 03: 3 / 20 correct - 15.00% accuracy
+	Experiment 04: 2 / 20 correct - 10.00% accuracy
+	Experiment 05: 3 / 20 correct - 15.00% accuracy
+	Experiment 06: 2 / 20 correct - 10.00% accuracy
+	Experiment 07: 2 / 20 correct - 10.00% accuracy
+	Experiment 08: 2 / 20 correct - 10.00% accuracy
+	Experiment 09: 3 / 20 correct - 15.00% accuracy
+	Experiment 10: 4 / 20 correct - 20.00% accuracy
+	Experiment 11: 5 / 20 correct - 25.00% accuracy
+	Experiment 12: 4 / 20 correct - 20.00% accuracy
+	Experiment 13: 3 / 20 correct - 15.00% accuracy
+	Experiment 14: 6 / 20 correct - 30.00% accuracy
+	Experiment 15: 3 / 20 correct - 15.00% accuracy
+	Experiment 16: 2 / 20 correct - 10.00% accuracy
+	Experiment 17: 3 / 20 correct - 15.00% accuracy
+	Experiment 18: 5 / 20 correct - 25.00% accuracy
+	Experiment 19: 2 / 20 correct - 10.00% accuracy
+	Experiment 20: 3 / 20 correct - 15.00% accuracy
+	Accuracy for 20-image networks: 63 / 400 correct - 15.75% accuracy
