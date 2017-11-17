@@ -327,7 +327,7 @@ def standard_run(num_samples):
 
 def experiment_run(save_figures=False):
     mnist, _ = load_mnist_data()
-    experiments = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    experiments = range(1, 21)
     repeat = 10
     noise = 0.20
 
