@@ -56,65 +56,69 @@ class HopfieldNetwork:
                 energy += -0.5 * self.weights[i][j] * self.state[i] * self.state[j]
         return energy
 
-    def train_hebbian(self, images):
+    def train_hebbian(self, patterns):
         """Train the Hopfield network using the Hebbian learning rule (1949).
         https://en.wikipedia.org/wiki/Hopfield_network#Hebbian_learning_rule_for_Hopfield_networks
         """
-        for img in images:
-            a = img.reshape((self.shape, 1))
+        for p in patterns:
+            a = p.reshape((self.shape, 1))
             b = a.T
             self.weights += np.dot(a, b)
-        self.weights -= (np.identity(images[0].size) * images.shape[0])
+        self.weights -= (np.identity(patterns[0].size) * patterns.shape[0])
         return self.weights
 
-    def train_hebbian_unoptimized(self, images):
+    def train_hebbian_unoptimized(self, patterns):
         """Inefficient version of the train_hebbian function.
         Performs individual multiplications instead of efficient matrix operations."""
         n = self.shape
         for i, j in itertools.product(range(n), range(n)):
-            self.weights[i][j] = sum([img[i] * img[j] for img in images]) / n
+            self.weights[i][j] = sum([p[i] * p[j] for p in patterns]) / n
         return self.weights
 
-    def train_storkey(self, images):
+    def train_storkey(self, patterns):
         """Train the Hopfield network using the Storkey learning rule (1997).
         https://en.wikipedia.org/wiki/Hopfield_network#The_Storkey_learning_rule
+        http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.33.103&rep=rep1&type=pdf
         """
         n = self.shape
-        for img in images:
+        for p in patterns:
             for i, j in itertools.product(range(n), range(n)):
                 wt = self.weights
                 w = wt[i][j]
-                x = img[i] * img[j]
-                y = img[i] * (np.dot(wt[j], img) - wt[j][i] * img[i] - wt[j][j] * img[j])
-                z = img[j] * (np.dot(wt[i], img) - wt[i][i] * img[i] - wt[i][j] * img[j])
+                x = p[i] * p[j]
+                y = p[i] * (np.dot(wt[j], p) - wt[j][i] * p[i] - wt[j][j] * p[j])
+                z = p[j] * (np.dot(wt[i], p) - wt[i][i] * p[i] - wt[i][j] * p[j])
                 wt[i][j] = w + ((x - y - z) / n)
 
-    def train_storkey_unoptimized(self, images):
+    def train_storkey_unoptimized(self, patterns):
         """Inefficient version of the train_storkey function.
         Performs individual multiplications instead of efficient matrix operations."""
         n = self.shape
-        for img in images:
+        for p in patterns:
             for i, j in itertools.product(range(n), range(n)):
                 w = self.weights[i][j]
-                x = img[i] * img[j] / n
-                y = img[i] * sum([self.weights[j][k] * img[k] for k in range(n) if k not in [i, j]]) / n
-                z = img[j] * sum([self.weights[i][k] * img[k] for k in range(n) if k not in [i, j]]) / n
+                x = p[i] * p[j] / n
+                y = p[i] * sum([self.weights[j][k] * p[k] for k in range(n) if k not in [i, j]]) / n
+                z = p[j] * sum([self.weights[i][k] * p[k] for k in range(n) if k not in [i, j]]) / n
                 self.weights[i][j] = w + x - y - z
 
     def activate(self, i):
+        """Determine whether the given neuron should be active or inactive.
+        https://en.wikipedia.org/wiki/Hopfield_network#Updating"""
         weight_sum = np.dot(self.weights[i], self.state)
         self.state[i] = 1 if weight_sum > self.thresholds[i] else -1
 
     def activate_unoptimized(self, i):
+        """Inefficient version of activate."""
         num_neurons = self.shape
         weight_sum = 0.0
         for j in range(num_neurons):
             weight_sum += self.weights[i][j] * self.state[j]
         self.state[i] = 1 if weight_sum > self.thresholds[i] else -1
 
-    def restore(self, degraded_image):
+    def restore(self, degraded_pattern):
         """Recover the original pattern of the degraded input pattern."""
-        self.state = np.copy(degraded_image)
+        self.state = np.copy(degraded_pattern)
         num_neurons = self.shape
 
         # During each iteration: ensure each neuron is activated at least once
@@ -133,8 +137,8 @@ class HopfieldNetwork:
             if not changed:
                 break
 
-        recovered_image = np.copy(self.state)
-        return recovered_image
+        recovered_pattern = np.copy(self.state)
+        return recovered_pattern
 
 
 def load_mnist_data():
@@ -311,6 +315,7 @@ def standard_run(num_samples):
     # Initialize network
     network = HopfieldNetwork(shape=784)
     network.train_storkey(np.array(images))
+    # network.train_hebbian(np.array(images))
     visualize_network(network)
     visualize_neurons(network)
 
@@ -328,7 +333,7 @@ def standard_run(num_samples):
 def experiment_run(save_figures=False):
     mnist, _ = load_mnist_data()
     experiments = range(1, 21)
-    repeat = 10
+    repeat = 2
     noise = 0.20
 
     for num_samples in experiments:
@@ -338,6 +343,7 @@ def experiment_run(save_figures=False):
             images = [mnist[i] for i in np.random.choice(range(len(mnist)), num_samples, replace=False)]
             network = HopfieldNetwork(shape=784)
             network.train_storkey(np.array(images))
+            # network.train_hebbian(np.array(images))
             visualize_neurons(network, title='Network storing {:02d} images (experiment #{:02d})'
                               .format(num_samples, e + 1), save=save_figures)
             correct = 0
@@ -371,8 +377,8 @@ def main():
         print("Usage:\n\tpython3 hopfieldnet.py <num-training-samples>")
         return
 
-    # standard_run(num_samples)
-    experiment_run(save_figures=False)
+    standard_run(num_samples)
+    # experiment_run(save_figures=False)
 
 
 if __name__ == '__main__':
