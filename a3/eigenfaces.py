@@ -33,14 +33,11 @@ try:
     num_components = int(sys.argv[1])
     print("Extracting the top {} eigenfaces from {} faces".format(num_components, num_samples))
     pca = PCA(n_components=num_components, svd_solver='randomized', whiten=True).fit(data)
-    eigenfaces = pca.components_.reshape((num_components, 50, 37))
-
-    print("Projecting the input data on the eigenfaces orthonormal basis")
     data = pca.transform(data)
     num_features = data.shape[1]
 except (IndexError, ValueError):
     print("NOT PERFORMING PCA THIS RUN")
-    print("To perform PCA:\n\tpython3 eigenfaces.py <num-pca-components>\n")
+    print("To perform PCA:\n\tpython3 eigenfaces.py num_PCA_components\n")
     time.sleep(2)
     data = data / data.max()  # regularize to interval [0, 1]
     data = (data * 2) - 1  # regularize to interval [-1, 1]
@@ -50,9 +47,20 @@ labels = np.zeros(shape=(num_samples, num_labels))
 for i, x in enumerate(target):
     labels[i][x] = 1
 
+# Training hyper-parameters
+num_folds = 10
+kf = KFold(n_splits=num_folds)
+folds = list(kf.split(data))
+batch_size = 64
+epochs = 100
+learn_rate = 0.020
+hidden_neurons_1 = 160
+hidden_neurons_2 = 60
+fold_accuracy = []
+
 # Set hidden layer sizes
-size_h1 = tf.constant(160, dtype=tf.int32)
-size_h2 = tf.constant(60, dtype=tf.int32)
+size_h1 = tf.constant(hidden_neurons_1, dtype=tf.int32)
+size_h2 = tf.constant(hidden_neurons_2, dtype=tf.int32)
 
 # Set input and output layer sizes
 X = tf.placeholder("float", [None, num_features])
@@ -62,15 +70,6 @@ Y = tf.placeholder("float", [None, num_labels])
 w_h1 = init_weights([num_features, size_h1])
 w_h2 = init_weights([size_h1, size_h2])
 w_o = init_weights([size_h2, num_labels])
-
-# Training parameters
-num_folds = 10
-kf = KFold(n_splits=num_folds)
-folds = list(kf.split(data))
-batch_size = 64
-epochs = 100
-learn_rate = 0.020
-fold_accuracy = []
 
 # Define Tensorflow operations
 py_x = model(X, w_h1, w_h2, w_o)
@@ -88,12 +87,15 @@ for fold in range(num_folds):
     with tf.Session() as sess:
         tf.global_variables_initializer().run()
         for epoch in range(1, epochs + 1):
-            for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX) + 1, batch_size)):
+            batch_starts = range(0, len(trX), batch_size)
+            batch_ends = range(batch_size, len(trX) + 1, batch_size)
+
+            for start, end in zip(batch_starts, batch_ends):
                 sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
 
             if epoch % 20 == 0:
                 epoch_accuracy = np.mean(np.argmax(teY, axis=1) == sess.run(predict_op, feed_dict={X: teX}))
-                print('\t{} --- {:.2f}%'.format(epoch, epoch_accuracy * 100))
+                print('\tEpoch {:3} ---> {:.2f}%'.format(epoch, epoch_accuracy * 100))
 
     fold_accuracy.append(epoch_accuracy)
     print('Accuracy with fold #{} as training: {:.2f}%\n'.format(fold + 1, fold_accuracy[-1] * 100))
