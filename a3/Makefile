@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 prepare-venv: clean
 	@echo "Preparing virtual environment..."
-	virtualenv -p python3.6 --verbose --prompt='(neural-4107) ' env
+	virtualenv -p python3.5 --verbose --prompt='(neural-4107) ' env
 	env/bin/pip install -r requirements.txt
 
 update-requirements:
