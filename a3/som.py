@@ -1,9 +1,12 @@
 import random
 import numpy as np
 from sklearn.datasets import fetch_mldata
+from sklearn import decomposition
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 class SOM:
-    def __init__(self, wx, wy, wv, lr=0.5, sigma=0.3):
+    def __init__(self, wx, wy, wv, lr=0.5, sigma=2.0):
         # Steps:
         # 1.) Initialize wx*wy*784 random weights for each node n
         # 2.) Input training sample X
@@ -94,6 +97,15 @@ class SOM:
 
         return self._w
 
+    # Approx. weights
+    def approx_weights(self):
+        t = self._w.reshape(self._wx*self._wy,784)
+
+        pca = decomposition.PCA(n_components=2).fit(t)
+        pca_2d = pca.transform(t)
+
+        return pca_2d.T
+
 
 def main():
     # Load and prepare data
@@ -109,13 +121,20 @@ def main():
     # Convert X and y lists to numpy arrays
     X, y = (np.asarray(X, dtype=np.int64), np.asarray(y, dtype=np.float64))
     X = X/X.max()
-    y = y/y.max()
 
     # Init SOM
     som = SOM(30,30,784)
 
     # Train for 1000 iterations, randomly sampling from 1s and 5s
     som.train_iter(X, iterations=1000)
+
+    # Approximation of weights
+    weights = som.approx_weights()
+
+
+    # Plot the PCA-reduced weights
+    plt.scatter(weights[0], weights[1])
+    plt.show()
 
 
 if __name__ == '__main__':
