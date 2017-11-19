@@ -64,8 +64,9 @@ class SOM:
         return np.unravel_index(self._m.argmin(), self._m.shape)
 
     def _gaussian(self, c, sigma):
-        """# Convenient way of calculating Gaussian from:
-        https://github.com/JustGlowing/minisom
+        """# Convenient way of calculating Gaussian.
+        The professor allowed referring to external libraries for SOM.
+        From: https://github.com/JustGlowing/minisom
         """
         d = 2*np.pi*sigma**2
         ax = np.exp(-np.power(self._nx-c[0], 2)/d)
@@ -74,7 +75,8 @@ class SOM:
 
     def _update_w(self, t_X, t_w, t, iterations):
         """Weight update function.
-        From https://github.com/JustGlowing/minisom
+        The professor allowed referring to external libraries for SOM.
+        From: https://github.com/JustGlowing/minisom
         """
         # TODO: Implement sigma and LR decay per training iteration without copying code
         eta = self._decay(self._lr, t, iterations/2)
