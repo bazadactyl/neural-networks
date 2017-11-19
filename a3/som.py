@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
 class SOM:
-    def __init__(self, wx, wy, wv, lr=0.5, sigma=2.0):
+    def __init__(self, wx, wy, wv, lr=0.5, sigma=7.0):
         # Steps:
         # 1.) Initialize wx*wy*784 random weights for each node n
         # 2.) Input training sample X
@@ -107,6 +107,57 @@ class SOM:
         return pca_2d.T
 
 
+    def plot_neuron(self, weights, neuron):
+        reshaped = weights.reshape(900, 784)
+        image = reshaped[neuron].reshape(28, 28)
+
+        fig, ax = plt.subplots()
+        ax.imshow(image, interpolation='nearest')
+        num_rows, num_cols = image.shape
+
+        def format_coord(self, x, y):
+            col = int(x + 0.5)
+            row = int(y + 0.5)
+
+            if col >= 0 and col < num_cols and row >= 0 and row < num_rows:
+                z = image[row, col]
+                return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
+            else:
+                return 'x=%1.4f, y=%1.4f' % (x, y)
+
+        ax.format_coord = format_coord
+        plt.show()
+
+
+    def plot_neurons(self, weights, one_image, five_image):
+        reshaped = weights.reshape(900, 784)
+        color = np.zeros(shape=(900))
+
+        for neuron in range(900):
+            neuron_image_prototype = reshaped[neuron].reshape(28, 28)
+            norm_with_one = np.linalg.norm(neuron_image_prototype - one_image)
+            norm_with_five = np.linalg.norm(neuron_image_prototype - five_image)
+            color[neuron] = 1 if norm_with_one < norm_with_five else 5
+
+        color_grid = color.reshape(30, 30)
+
+        fig, ax = plt.subplots()
+        ax.imshow(color_grid, interpolation='nearest')
+        num_rows, num_cols = color_grid.shape
+
+        def format_coord(x, y):
+            col = int(x + 0.5)
+            row = int(y + 0.5)
+            if col >= 0 and col < num_cols and row >= 0 and row < num_rows:
+                z = color_grid[row, col]
+                return 'x=%1.4f, y=%1.4f, z=%1.4f' % (x, y, z)
+            else:
+                return 'x=%1.4f, y=%1.4f' % (x, y)
+
+        ax.format_coord = format_coord
+        plt.draw()
+
+
 def main():
     # Load and prepare data
     mnist = fetch_mldata('MNIST original')
@@ -115,22 +166,39 @@ def main():
 
     # Append only 1's and 5's from MNIST to X and y lists
     X = []
+    X1 = []
+    X5 = []
     y = []
+    y1 = []
+    y5 = []
     [(X.append(data[i]), y.append(target[i])) for i in range(len(data)) if target[i] == 1 or target[i] == 5]
+    [(X1.append(data[i]), y1.append(target[i])) for i in range(len(data)) if target[i] == 1]
+    [(X5.append(data[i]), y5.append(target[i])) for i in range(len(data)) if target[i] == 5]
 
     # Convert X and y lists to numpy arrays
     X, y = (np.asarray(X, dtype=np.int64), np.asarray(y, dtype=np.float64))
+    X1, y1 = (np.asarray(X1, dtype=np.int64), np.asarray(y1, dtype=np.float64))
+    X5, y5 = (np.asarray(X5, dtype=np.int64), np.asarray(y5, dtype=np.float64))
     X = X/X.max()
+    X1 = X1/X1.max()
+    X5 = X5/X5.max()
+
+    # Visualize
+    pca = decomposition.PCA(n_components=2).fit(X)
+    x_reduced = pca.transform(X).T
+    plt.scatter(x_reduced[0], x_reduced[1])
+    plt.show()
 
     # Init SOM
     som = SOM(30,30,784)
 
     # Train for 1000 iterations, randomly sampling from 1s and 5s
-    som.train_iter(X, iterations=1000)
+    for i in range(5):
+        som.train_iter(X, iterations=5)
+        som.plot_neurons(som._w, X5.mean(axis=0).reshape(28,28), X1.mean(axis=0).reshape(28,28))
 
     # Approximation of weights
     weights = som.approx_weights()
-
 
     # Plot the PCA-reduced weights
     plt.scatter(weights[0], weights[1])
