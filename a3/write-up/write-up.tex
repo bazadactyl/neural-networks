@@ -844,7 +844,7 @@ computed by the K-means algorithm.
 	\caption{K-means Clustering of the MNIST Data Reduced to 2D}
 \end{figure}
 
-\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+ \begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
 
 \pagebreak
 
@@ -863,74 +863,67 @@ PIL and run yet another script.
 
 We have provided an easy-to-use Makefile to help you run our program:
 
-    \begin{Verbatim}[frame=single,commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{make} \PY{n}{prepare}\PY{o}{\PYZhy{}}\PY{n}{venv}
-        \PY{o}{.}\PY{o}{/}\PY{n}{env}\PY{o}{/}\PY{n+nb}{bin}\PY{o}{/}\PY{n}{python} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py}      \PY{c+c1}{\PYZsh{} don\PYZsq{}t perform PCA on face data}
-        \PY{o}{.}\PY{o}{/}\PY{n}{env}\PY{o}{/}\PY{n+nb}{bin}\PY{o}{/}\PY{n}{python} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{l+m+mi}{100}  \PY{c+c1}{\PYZsh{} perform PCA to obtain 100 components / eigenfaces}
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+    \PY{n}{make} \PY{n}{prepare}\PY{o}{\PYZhy{}}\PY{n}{venv}
+    \PY{o}{.}\PY{o}{/}\PY{n}{env}\PY{o}{/}\PY{n+nb}{bin}\PY{o}{/}\PY{n}{python} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py}      \PY{c+c1}{\PYZsh{} don\PYZsq{}t perform PCA on face data}
+    \PY{o}{.}\PY{o}{/}\PY{n}{env}\PY{o}{/}\PY{n+nb}{bin}\PY{o}{/}\PY{n}{python} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{l+m+mi}{100}  \PY{c+c1}{\PYZsh{} perform PCA to obtain 100 components / eigenfaces}
 \end{Verbatim}
 
 
     Otherwise, if you have tensorflow, matplotlib, numpy, and scikit-learn
 installed already:
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Syntax}
-        \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{p}{[}\PY{n}{num\PYZus{}PCA\PYZus{}components}\PY{p}{]}
-        \PY{c+c1}{\PYZsh{} Examplee}
-        \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py}      \PY{c+c1}{\PYZsh{} don\PYZsq{}t perform PCA on face data}
-        \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{l+m+mi}{100}  \PY{c+c1}{\PYZsh{} perform PCA to obtain 100 eigenfaces}
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+    \PY{c+c1}{\PYZsh{} Syntax}
+    \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{p}{[}\PY{n}{num\PYZus{}PCA\PYZus{}components}\PY{p}{]}
+    \PY{c+c1}{\PYZsh{} Examplee}
+    \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py}      \PY{c+c1}{\PYZsh{} don\PYZsq{}t perform PCA on face data}
+    \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{l+m+mi}{100}  \PY{c+c1}{\PYZsh{} perform PCA to obtain 100 eigenfaces}
 \end{Verbatim}
 
 
     Running the program will do the following:
 
 \begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  import the LFW face data from local files (provided with our
-  submission)
-\item
-  perform 10-fold cross-validation; for each fold do:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    initialize a feed-forward network from scratch
-  \item
-    train the classifier on all 9 training folds for 100 epochs
-  \item
-    after the final epoch, test for accuracy using the testing fold
-  \item
-    save the accuracy for this fold
-  \end{itemize}
-\item
-  compute the average accuracy over the 10 folds and print it out
+	\def\labelenumi{\arabic{enumi}.}
+	\tightlist
+	\item import the LFW face data from local files \textit{(provided with our submission)}
+	\item perform 10-fold cross-validation; for each fold do:
+	\begin{itemize}
+		\tightlist
+		\item initialize a feed-forward network from scratch
+		\item train the classifier on all 9 training folds for 100 epochs
+		\item after the final epoch, test for accuracy using the testing fold
+		\item save the accuracy for this fold
+	\end{itemize}
+	\item compute the average accuracy over the 10 folds and print it out
 \end{enumerate}
 
-    \subsection{Accuracy of Classification / Facial
+\pagebreak
+
+\subsection{Accuracy of Classification / Facial
 Recognition}\label{accuracy-of-classification-facial-recognition}
 
 First, we tested our feed-forward network with the face data to see how
 well we can classify faces without the use of PCA. We performed 10-fold
 cross validation, along with the following hyper-parameters:
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} Hyper\PYZhy{}parameters}
-        \PY{n}{num\PYZus{}folds} \PY{o}{=} \PY{l+m+mi}{10}
-        \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{64}
-        \PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{100}
-        \PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.020}
-        
-        \PY{c+c1}{\PYZsh{} Architecture (USED FOR ALL EXPERIMENTS)}
-        \PY{n}{input\PYZus{}neurons} \PY{o}{=} \PY{l+m+mi}{1850}    \PY{c+c1}{\PYZsh{} face images were 50x37 in size}
-        \PY{n}{hidden\PYZus{}neurons\PYZus{}1} \PY{o}{=} \PY{l+m+mi}{160}  \PY{c+c1}{\PYZsh{} hidden layer 1}
-        \PY{n}{hidden\PYZus{}neurons\PYZus{}2} \PY{o}{=} \PY{l+m+mi}{60}   \PY{c+c1}{\PYZsh{} hidden layer 2}
-        \PY{n}{output\PYZus{}neurons} \PY{o}{=} \PY{l+m+mi}{7}      \PY{c+c1}{\PYZsh{} dataset had faces of 7 unique people}
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Hyper\PYZhy{}parameters}
+\PY{n}{num\PYZus{}folds} \PY{o}{=} \PY{l+m+mi}{10}
+\PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{64}
+\PY{n}{epochs} \PY{o}{=} \PY{l+m+mi}{100}
+\PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.020}
+
+\PY{c+c1}{\PYZsh{} Architecture (USED FOR ALL EXPERIMENTS)}
+\PY{n}{input\PYZus{}neurons} \PY{o}{=} \PY{l+m+mi}{1850}    \PY{c+c1}{\PYZsh{} face images were 50x37 in size}
+\PY{n}{hidden\PYZus{}neurons\PYZus{}1} \PY{o}{=} \PY{l+m+mi}{160}  \PY{c+c1}{\PYZsh{} hidden layer 1}
+\PY{n}{hidden\PYZus{}neurons\PYZus{}2} \PY{o}{=} \PY{l+m+mi}{60}   \PY{c+c1}{\PYZsh{} hidden layer 2}
+\PY{n}{output\PYZus{}neurons} \PY{o}{=} \PY{l+m+mi}{7}      \PY{c+c1}{\PYZsh{} dataset had faces of 7 unique people}
 \end{Verbatim}
 
 
-    This yielded a classifier with 83.39\% averaged cross-validated
+This yielded a classifier with 83.39\% averaged cross-validated
 accuracy.
 
 We then applied PCA to the data before training on it, again using
@@ -940,58 +933,65 @@ same architecture and hyper-parameters as the experiment on the raw face
 data.} These experiments on the dimensionality-reduced datasets yielded
 the cross-validated accuracy values in the chart below:
 
-\begin{figure}[htbp]
-\centering
-\includegraphics{../figures/q3/pca-accuracy.png}
-\caption{pca-accuracy.png}
+\subsubsection{Accuracy Chart}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{../figures/q3/pca-accuracy.png}
+	\caption{Classifier Accuracy: with and without PCA}
 \end{figure}
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
-        \PY{k+kn}{from} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{ticker} \PY{k}{import} \PY{n}{MaxNLocator}
-        
-        \PY{n}{non\PYZus{}pca\PYZus{}accuracy} \PY{o}{=} \PY{l+m+mf}{83.39}
-        
-        \PY{n}{num\PYZus{}eigenfaces} \PY{o}{=} \PY{p}{[}
-            \PY{l+m+mi}{100}\PY{p}{,} \PY{l+m+mi}{60}\PY{p}{,} \PY{l+m+mi}{40}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,}
-             \PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{10}\PY{p}{,}  \PY{l+m+mi}{9}\PY{p}{,}
-              \PY{l+m+mi}{8}\PY{p}{,}  \PY{l+m+mi}{7}\PY{p}{,}  \PY{l+m+mi}{6}\PY{p}{,}  \PY{l+m+mi}{5}\PY{p}{,}
-              \PY{l+m+mi}{4}\PY{p}{,}  \PY{l+m+mi}{3}\PY{p}{,}  \PY{l+m+mi}{2}\PY{p}{,}  \PY{l+m+mi}{1}\PY{p}{,}
-        \PY{p}{]}
-        \PY{n}{pca\PYZus{}accuracy} \PY{o}{=} \PY{p}{[}
-            \PY{l+m+mf}{82.37}\PY{p}{,} \PY{l+m+mf}{80.36}\PY{p}{,} \PY{l+m+mf}{76.40}\PY{p}{,} \PY{l+m+mf}{70.34}\PY{p}{,}
-            \PY{l+m+mf}{62.50}\PY{p}{,} \PY{l+m+mf}{53.19}\PY{p}{,} \PY{l+m+mf}{51.32}\PY{p}{,} \PY{l+m+mf}{48.99}\PY{p}{,}
-            \PY{l+m+mf}{48.99}\PY{p}{,} \PY{l+m+mf}{48.06}\PY{p}{,} \PY{l+m+mf}{47.13}\PY{p}{,} \PY{l+m+mf}{46.74}\PY{p}{,}
-            \PY{l+m+mf}{44.10}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,}
-        \PY{p}{]}
-        
-        \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
-        \PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{gca}\PY{p}{(}\PY{p}{)}
-        
-        \PY{n}{plt}\PY{o}{.}\PY{n}{axhline}\PY{p}{(}\PY{n}{y}\PY{o}{=}\PY{n}{non\PYZus{}pca\PYZus{}accuracy}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{num\PYZus{}eigenfaces}\PY{p}{,} \PY{n}{pca\PYZus{}accuracy}\PY{p}{)}
-        
-        \PY{n}{ax}\PY{o}{.}\PY{n}{xaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{MaxNLocator}\PY{p}{(}\PY{n}{integer}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{)}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{30}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{]}\PY{p}{)}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Number of PCA Components}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{10\PYZhy{}fold Cross\PYZhy{}Validated Facial Recognition Accuracy (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-        \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Data without PCA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Data with X\PYZhy{}many PCA components}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-        
-        \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\pagebreak
+
+\subsubsection{Accuracy Chart Code}
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{from} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{ticker} \PY{k}{import} \PY{n}{MaxNLocator}
+
+\PY{n}{non\PYZus{}pca\PYZus{}accuracy} \PY{o}{=} \PY{l+m+mf}{83.39}
+
+\PY{n}{num\PYZus{}eigenfaces} \PY{o}{=} \PY{p}{[}
+    \PY{l+m+mi}{100}\PY{p}{,} \PY{l+m+mi}{60}\PY{p}{,} \PY{l+m+mi}{40}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{,}
+     \PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{10}\PY{p}{,}  \PY{l+m+mi}{9}\PY{p}{,}
+      \PY{l+m+mi}{8}\PY{p}{,}  \PY{l+m+mi}{7}\PY{p}{,}  \PY{l+m+mi}{6}\PY{p}{,}  \PY{l+m+mi}{5}\PY{p}{,}
+      \PY{l+m+mi}{4}\PY{p}{,}  \PY{l+m+mi}{3}\PY{p}{,}  \PY{l+m+mi}{2}\PY{p}{,}  \PY{l+m+mi}{1}\PY{p}{,}
+\PY{p}{]}
+\PY{n}{pca\PYZus{}accuracy} \PY{o}{=} \PY{p}{[}
+    \PY{l+m+mf}{82.37}\PY{p}{,} \PY{l+m+mf}{80.36}\PY{p}{,} \PY{l+m+mf}{76.40}\PY{p}{,} \PY{l+m+mf}{70.34}\PY{p}{,}
+    \PY{l+m+mf}{62.50}\PY{p}{,} \PY{l+m+mf}{53.19}\PY{p}{,} \PY{l+m+mf}{51.32}\PY{p}{,} \PY{l+m+mf}{48.99}\PY{p}{,}
+    \PY{l+m+mf}{48.99}\PY{p}{,} \PY{l+m+mf}{48.06}\PY{p}{,} \PY{l+m+mf}{47.13}\PY{p}{,} \PY{l+m+mf}{46.74}\PY{p}{,}
+    \PY{l+m+mf}{44.10}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,} \PY{l+m+mf}{41.15}\PY{p}{,}
+\PY{p}{]}
+
+\PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+\PY{n}{ax} \PY{o}{=} \PY{n}{fig}\PY{o}{.}\PY{n}{gca}\PY{p}{(}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{axhline}\PY{p}{(}\PY{n}{y}\PY{o}{=}\PY{n}{non\PYZus{}pca\PYZus{}accuracy}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{num\PYZus{}eigenfaces}\PY{p}{,} \PY{n}{pca\PYZus{}accuracy}\PY{p}{)}
+
+\PY{n}{ax}\PY{o}{.}\PY{n}{xaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}locator}\PY{p}{(}\PY{n}{MaxNLocator}\PY{p}{(}\PY{n}{integer}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{30}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{]}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Number of PCA Components}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{10\PYZhy{}fold Cross\PYZhy{}Validated Facial Recognition Accuracy (}\PY{l+s+s2}{\PYZpc{}}\PY{l+s+s2}{)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Data without PCA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Data with X\PYZhy{}many PCA components}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{upper right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
+\pagebreak
 
-    \subsection{Implementation}\label{implementation}
+\subsection{Implementation}\label{implementation}
 
-    \subsubsection{Performing PCA}\label{performing-pca}
+\subsubsection{Performing PCA}\label{performing-pca}
 
 We used scikit-learn to perform PCA on the input face data:
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{num\PYZus{}components} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{sys}\PY{o}{.}\PY{n}{argv}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
-        \PY{n}{pca} \PY{o}{=} \PY{n}{PCA}\PY{p}{(}\PY{n}{n\PYZus{}components}\PY{o}{=}\PY{n}{num\PYZus{}components}\PY{p}{,} \PY{n}{svd\PYZus{}solver}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{randomized}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{whiten}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{data}\PY{p}{)}
-        \PY{n}{data} \PY{o}{=} \PY{n}{pca}\PY{o}{.}\PY{n}{transform}\PY{p}{(}\PY{n}{data}\PY{p}{)}
-        \PY{n}{num\PYZus{}features} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+\PY{n}{num\PYZus{}components} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{sys}\PY{o}{.}\PY{n}{argv}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+\PY{n}{pca} \PY{o}{=} \PY{n}{PCA}\PY{p}{(}\PY{n}{n\PYZus{}components}\PY{o}{=}\PY{n}{num\PYZus{}components}\PY{p}{,} \PY{n}{svd\PYZus{}solver}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{randomized}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{whiten}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+\PY{n}{data} \PY{o}{=} \PY{n}{pca}\PY{o}{.}\PY{n}{transform}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+\PY{n}{num\PYZus{}features} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
 \end{Verbatim}
 
 
@@ -1003,52 +1003,53 @@ train the classifier on all training folds for 100 epochs * after the
 final epoch, save the accuracy using the testing fold * compute the
 average accuracy over the 10 folds
 
-    \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{k}{for} \PY{n}{fold} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}folds}\PY{p}{)}\PY{p}{:}
-            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Using fold }\PY{l+s+si}{\PYZob{}:02d\PYZcb{}}\PY{l+s+s1}{ / }\PY{l+s+si}{\PYZob{}:02d\PYZcb{}}\PY{l+s+s1}{ as the training fold:}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{fold} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{num\PYZus{}folds}\PY{p}{)}\PY{p}{)}
-        
-            \PY{n}{train\PYZus{}indices}\PY{p}{,} \PY{n}{test\PYZus{}indices} \PY{o}{=} \PY{n}{folds}\PY{p}{[}\PY{n}{fold}\PY{p}{]}
-            \PY{n}{trX}\PY{p}{,} \PY{n}{teX} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{n}{train\PYZus{}indices}\PY{p}{]}\PY{p}{,} \PY{n}{data}\PY{p}{[}\PY{n}{test\PYZus{}indices}\PY{p}{]}
-            \PY{n}{trY}\PY{p}{,} \PY{n}{teY} \PY{o}{=} \PY{n}{labels}\PY{p}{[}\PY{n}{train\PYZus{}indices}\PY{p}{]}\PY{p}{,} \PY{n}{labels}\PY{p}{[}\PY{n}{test\PYZus{}indices}\PY{p}{]}
-        
-            \PY{k}{with} \PY{n}{tf}\PY{o}{.}\PY{n}{Session}\PY{p}{(}\PY{p}{)} \PY{k}{as} \PY{n}{sess}\PY{p}{:}
-                \PY{n}{tf}\PY{o}{.}\PY{n}{global\PYZus{}variables\PYZus{}initializer}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
-                \PY{k}{for} \PY{n}{epoch} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{epochs} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
-                    \PY{n}{batch\PYZus{}starts} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{trX}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}
-                    \PY{n}{batch\PYZus{}ends} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n}{batch\PYZus{}size}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{trX}\PY{p}{)} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}
-        
-                    \PY{k}{for} \PY{n}{start}\PY{p}{,} \PY{n}{end} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{batch\PYZus{}starts}\PY{p}{,} \PY{n}{batch\PYZus{}ends}\PY{p}{)}\PY{p}{:}
-                        \PY{n}{sess}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{train\PYZus{}op}\PY{p}{,} \PY{n}{feed\PYZus{}dict}\PY{o}{=}\PY{p}{\PYZob{}}\PY{n}{X}\PY{p}{:} \PY{n}{trX}\PY{p}{[}\PY{n}{start}\PY{p}{:}\PY{n}{end}\PY{p}{]}\PY{p}{,} \PY{n}{Y}\PY{p}{:} \PY{n}{trY}\PY{p}{[}\PY{n}{start}\PY{p}{:}\PY{n}{end}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
-        
-                    \PY{k}{if} \PY{n}{epoch} \PY{o}{\PYZpc{}} \PY{l+m+mi}{20} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
-                        \PY{n}{epoch\PYZus{}accuracy} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{teY}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PY{o}{==} \PY{n}{sess}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{predict\PYZus{}op}\PY{p}{,} \PY{n}{feed\PYZus{}dict}\PY{o}{=}\PY{p}{\PYZob{}}\PY{n}{X}\PY{p}{:} \PY{n}{teX}\PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
-                        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}t}\PY{l+s+s1}{Epoch }\PY{l+s+si}{\PYZob{}:3\PYZcb{}}\PY{l+s+s1}{ \PYZhy{}\PYZhy{}\PYZhy{}\PYZgt{} }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{epoch}\PY{p}{,} \PY{n}{epoch\PYZus{}accuracy} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
-        
-            \PY{n}{fold\PYZus{}accuracy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{epoch\PYZus{}accuracy}\PY{p}{)}
-            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Accuracy with fold \PYZsh{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{ as training: }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{fold} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{fold\PYZus{}accuracy}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
-        
-        \PY{n}{accuracy} \PY{o}{=} \PY{n+nb}{sum}\PY{p}{(}\PY{n}{fold\PYZus{}accuracy}\PY{p}{)} \PY{o}{/} \PY{n+nb}{len}\PY{p}{(}\PY{n}{fold\PYZus{}accuracy}\PY{p}{)}
-        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Average }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZhy{}fold cross validation accuracy: }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{num\PYZus{}folds}\PY{p}{,} \PY{n}{accuracy} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{fold} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}folds}\PY{p}{)}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Using fold }\PY{l+s+si}{\PYZob{}:02d\PYZcb{}}\PY{l+s+s1}{ / }\PY{l+s+si}{\PYZob{}:02d\PYZcb{}}\PY{l+s+s1}{ as the training fold:}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{fold} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{num\PYZus{}folds}\PY{p}{)}\PY{p}{)}
+
+    \PY{n}{train\PYZus{}indices}\PY{p}{,} \PY{n}{test\PYZus{}indices} \PY{o}{=} \PY{n}{folds}\PY{p}{[}\PY{n}{fold}\PY{p}{]}
+    \PY{n}{trX}\PY{p}{,} \PY{n}{teX} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{n}{train\PYZus{}indices}\PY{p}{]}\PY{p}{,} \PY{n}{data}\PY{p}{[}\PY{n}{test\PYZus{}indices}\PY{p}{]}
+    \PY{n}{trY}\PY{p}{,} \PY{n}{teY} \PY{o}{=} \PY{n}{labels}\PY{p}{[}\PY{n}{train\PYZus{}indices}\PY{p}{]}\PY{p}{,} \PY{n}{labels}\PY{p}{[}\PY{n}{test\PYZus{}indices}\PY{p}{]}
+
+    \PY{k}{with} \PY{n}{tf}\PY{o}{.}\PY{n}{Session}\PY{p}{(}\PY{p}{)} \PY{k}{as} \PY{n}{sess}\PY{p}{:}
+        \PY{n}{tf}\PY{o}{.}\PY{n}{global\PYZus{}variables\PYZus{}initializer}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
+        \PY{k}{for} \PY{n}{epoch} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{epochs} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{n}{batch\PYZus{}starts} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{trX}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}
+            \PY{n}{batch\PYZus{}ends} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n}{batch\PYZus{}size}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{trX}\PY{p}{)} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}
+
+            \PY{k}{for} \PY{n}{start}\PY{p}{,} \PY{n}{end} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{batch\PYZus{}starts}\PY{p}{,} \PY{n}{batch\PYZus{}ends}\PY{p}{)}\PY{p}{:}
+                \PY{n}{sess}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{train\PYZus{}op}\PY{p}{,} \PY{n}{feed\PYZus{}dict}\PY{o}{=}\PY{p}{\PYZob{}}\PY{n}{X}\PY{p}{:} \PY{n}{trX}\PY{p}{[}\PY{n}{start}\PY{p}{:}\PY{n}{end}\PY{p}{]}\PY{p}{,} \PY{n}{Y}\PY{p}{:} \PY{n}{trY}\PY{p}{[}\PY{n}{start}\PY{p}{:}\PY{n}{end}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
+
+            \PY{k}{if} \PY{n}{epoch} \PY{o}{\PYZpc{}} \PY{l+m+mi}{20} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+                \PY{n}{epoch\PYZus{}accuracy} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{teY}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PY{o}{==} \PY{n}{sess}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{n}{predict\PYZus{}op}\PY{p}{,} \PY{n}{feed\PYZus{}dict}\PY{o}{=}\PY{p}{\PYZob{}}\PY{n}{X}\PY{p}{:} \PY{n}{teX}\PY{p}{\PYZcb{}}\PY{p}{)}\PY{p}{)}
+                \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}t}\PY{l+s+s1}{Epoch }\PY{l+s+si}{\PYZob{}:3\PYZcb{}}\PY{l+s+s1}{ \PYZhy{}\PYZhy{}\PYZhy{}\PYZgt{} }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{epoch}\PY{p}{,} \PY{n}{epoch\PYZus{}accuracy} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
+
+    \PY{n}{fold\PYZus{}accuracy}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{epoch\PYZus{}accuracy}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Accuracy with fold \PYZsh{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{ as training: }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{fold} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{fold\PYZus{}accuracy}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
+
+\PY{n}{accuracy} \PY{o}{=} \PY{n+nb}{sum}\PY{p}{(}\PY{n}{fold\PYZus{}accuracy}\PY{p}{)} \PY{o}{/} \PY{n+nb}{len}\PY{p}{(}\PY{n}{fold\PYZus{}accuracy}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Average }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZhy{}fold cross validation accuracy: }\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{num\PYZus{}folds}\PY{p}{,} \PY{n}{accuracy} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{p}{)}
 \end{Verbatim}
 
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
 
-    \section{References}\label{references}
+\pagebreak
+
+\section{References}\label{references}
 
 \subsection{Question 1}\label{question-1}
 
 \begin{itemize}
-\tightlist
 \item
   https://en.wikipedia.org/wiki/Hopfield\_network
 \item
   http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.33.103\&rep=rep1\&type=pdf
-  (Storkey's paper)
+  \textit{(Storkey's paper)}
 \end{itemize}
 
 \subsection{Question 2}\label{question-2}
 
 \begin{itemize}
-\tightlist
 \item
   https://github.com/JustGlowing/minisom
 \item
@@ -1058,7 +1059,6 @@ average accuracy over the 10 folds
 \subsection{Question 3}\label{question-3}
 
 \begin{itemize}
-\tightlist
 \item
   We used the TensorFlow feed-forward code from our in-class tutorials.
 \item
@@ -1067,11 +1067,6 @@ average accuracy over the 10 folds
   http://scikit-learn.org/0.18/auto\_examples/applications/face\_recognition.html
 \end{itemize}
 
-    \begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
 
-
-    % Add a bibliography block to the postdoc
-    
-    
-    
-    \end{document}
+\end{document}
