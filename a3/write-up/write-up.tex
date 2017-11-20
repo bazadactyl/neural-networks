@@ -296,23 +296,13 @@ Running the program will do the following:
 \begin{enumerate}
 	\def\labelenumi{\arabic{enumi}.}
 	\tightlist
-	\item
-	  load the MNIST dataset using scikit-learn
-	\item
-	  pick some random MNIST images to train with; quantity of images is
-	  user-defined using the \textbf{num\_training\_patterns} command-line
-	  parameter
-	\item
-	  initialize a Hopfield network
-	\item
-	  train the network using Storkey's learning rule
-	\item
-	  degrade each training image with 20\% noise
-	\item
-	  test whether the network can restore the degraded images
-	  satisfactorily
-	\item
-	  print out the network's recovery accuracy
+	\item Load the MNIST dataset using scikit-learn.
+	\item Pick some random MNIST images to train with; quantity of images is user-defined using the \textbf{num\_training\_patterns} command-line parameter.
+	\item Initialize a Hopfield network.
+	\item Train the network using Storkey's learning rule.
+	\item Degrade each training image with 20\% noise (flip 20% of the bits).
+	\item Test whether the network can restore the degraded images satisfactorily.
+	\item Print out the network's recovery accuracy.
 \end{enumerate}
 
 After the programs performs the above, it will display the following
@@ -321,13 +311,9 @@ visualizations:
 \begin{enumerate}
 	\def\labelenumi{\arabic{enumi}.}
 	\tightlist
-	\item
-	  the network's weights
-	\item
-	  the network's state (the sum of each neuron's own weights)
-	\item
-	  a comparison between each original image, its degraded version, and
-	  its recovered version
+	\item The network's weights.
+	\item The network's state (the sum of each neuron's own weights).
+	\item A comparison between each original image, its degraded version, and its recovered version.
 \end{enumerate}
 
 \subsection{Accuracy of Pattern Recovery / Classification}\label{accuracy-of-pattern-recovery-classification}
@@ -876,7 +862,7 @@ installed already:
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
     \PY{c+c1}{\PYZsh{} Syntax}
     \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{p}{[}\PY{n}{num\PYZus{}PCA\PYZus{}components}\PY{p}{]}
-    \PY{c+c1}{\PYZsh{} Examplee}
+    \PY{c+c1}{\PYZsh{} Example}
     \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py}      \PY{c+c1}{\PYZsh{} don\PYZsq{}t perform PCA on face data}
     \PY{n}{python3} \PY{n}{eigenfaces}\PY{o}{.}\PY{n}{py} \PY{l+m+mi}{100}  \PY{c+c1}{\PYZsh{} perform PCA to obtain 100 eigenfaces}
 \end{Verbatim}
@@ -887,16 +873,16 @@ installed already:
 \begin{enumerate}
 	\def\labelenumi{\arabic{enumi}.}
 	\tightlist
-	\item import the LFW face data from local files \textit{(provided with our submission)}
-	\item perform 10-fold cross-validation; for each fold do:
+	\item Import the LFW face data from local files \textit{(provided with our submission)}.
+	\item Perform 10-fold cross-validation; for each fold do:
 	\begin{itemize}
 		\tightlist
-		\item initialize a feed-forward network from scratch
-		\item train the classifier on all 9 training folds for 100 epochs
-		\item after the final epoch, test for accuracy using the testing fold
-		\item save the accuracy for this fold
+		\item Initialize a feed-forward network from scratch.
+		\item Train the classifier on all 9 training folds for 100 epochs.
+		\item After the final epoch, test for accuracy using the testing fold.
+		\item Save the accuracy for this fold.
 	\end{itemize}
-	\item compute the average accuracy over the 10 folds and print it out
+	\item Compute the average accuracy over the 10 folds and print it out.
 \end{enumerate}
 
 \pagebreak
