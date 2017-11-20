@@ -320,11 +320,18 @@ def standard_run(num_samples):
     visualize_neurons(network)
 
     # Test the network
+    correct = 0
     for original in images:
-        degraded = degrade(original, noise=0.10)
-        # degraded = chop(degraded)
-        recovered = network.restore(degraded)
-        visualize_before_after(original, degraded, recovered, network)
+        degraded = degrade(original, noise=0.20)
+        restored = network.restore(degraded)
+        success = np.linalg.norm(original - restored) < 10
+        viz_title = 'Successful Recovery' if success else 'Imperfect Recovery'
+        visualize_before_after(original, degraded, restored, network, title=viz_title)
+        correct += 1 if success else 0
+
+    accuracy = (correct / len(images)) * 100
+    print("Recovery accuracy from a {}-image Hopfield network trained with Storkey's rule: {:.2f}%"
+          .format(len(images), accuracy))
 
     # Display the plots
     plt.show()
