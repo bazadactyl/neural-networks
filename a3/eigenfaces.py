@@ -78,7 +78,7 @@ train_op = tf.train.GradientDescentOptimizer(learning_rate=learn_rate).minimize(
 predict_op = tf.argmax(py_x, 1)
 
 for fold in range(num_folds):
-    print('Using fold {:02d} / {:02d} as the training fold:'.format(fold + 1, num_folds))
+    print('Using fold {:02d} / {:02d} as the testing fold:'.format(fold + 1, num_folds))
 
     train_indices, test_indices = folds[fold]
     trX, teX = data[train_indices], data[test_indices]
@@ -98,7 +98,7 @@ for fold in range(num_folds):
                 print('\tEpoch {:3} ---> {:.2f}%'.format(epoch, epoch_accuracy * 100))
 
     fold_accuracy.append(epoch_accuracy)
-    print('Accuracy with fold #{} as training: {:.2f}%\n'.format(fold + 1, fold_accuracy[-1] * 100))
+    print('Accuracy with fold #{} as testing: {:.2f}%\n'.format(fold + 1, fold_accuracy[-1] * 100))
 
 accuracy = sum(fold_accuracy) / len(fold_accuracy)
 print('Average {}-fold cross validation accuracy: {:.2f}%'.format(num_folds, accuracy * 100))
