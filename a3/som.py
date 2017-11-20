@@ -78,7 +78,6 @@ class SOM:
         The professor allowed referring to external libraries for SOM.
         From: https://github.com/JustGlowing/minisom
         """
-        # TODO: Implement sigma and LR decay per training iteration without copying code
         eta = self._decay(self._lr, t, iterations/2)
         sig = self._decay(self._sigma, t, iterations/2)
         gaussian_map = self._gaussian(t_w, sigma=sig)*eta
