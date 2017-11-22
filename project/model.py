@@ -1,16 +1,19 @@
 import tensorflow as tf
-import numpy as np
 
 # Define tensor constants
 IMAGE_SIZE = (224, 224)
 NUM_CLASSES = 20
 PREDICTIONS = 7 * 7 * 30
-BATCH_SIZE = 1
+BATCH_SIZE = 200
 
 # Layer definition convenience functions
 class YOLONet:
-    def __init__(self, X):
-        model = self.build(X)
+
+    def __init__(self, X, pretraining=False):
+        if pretraining:
+            model = self.build(X, pretraining=True)
+        else:
+            model = self.build(X)
 
     # https://github.com/tensorflow/models/blob/master/tutorials/image/cifar10/cifar10.py
     def _variable_on_cpu(self, name, shape, initializer):
@@ -49,6 +52,8 @@ class YOLONet:
             biases = self._variable_on_cpu('biases', [filter_[-1]],
                                       tf.constant_initializer(0.0))
             pre_activation = tf.nn.bias_add(conv, biases)
+
+            # TODO: Update TensorFlow and use tf.nn.leaky_relu(X, alpha=0.01) here
             output = tf.nn.relu(pre_activation, name=scope.name)
 
         return output
@@ -57,25 +62,19 @@ class YOLONet:
             Args: input, filter, stride, name, layer
             Returns: output layer
     '''
-    def fully_connected(self, input_):
-        with tf.variable_scope('fc1') as scope:
-            n = 384
-
-            reshape = tf.reshape(input_, [BATCH_SIZE, -1])
-            dim = reshape.get_shape()[1].value
-
-            weights = self._variable_with_weight_decay('weights', shape = [dim,n],
+    def fully_connected(self, input_, shape_, name):
+        with tf.variable_scope(name) as scope:
+            weights = self._variable_with_weight_decay('weights', shape = shape_,
                                                                   stddev = 0.04,
                                                                   wd = 0.004)
-            biases = self._variable_on_cpu('biases', [n], tf.constant_initializer(0.1))
+            biases = self._variable_on_cpu('biases', shape_[-1], tf.constant_initializer(0.1))
 
-            fc = tf.nn.relu(tf.matmul(reshape, weights) + biases,
-                            name=scope.name)
+            fc = tf.nn.relu(tf.matmul(input_, weights) + biases, name=scope.name)
 
             return fc
 
     # Construct our model
-    def build(self, images):
+    def build(self, images, pretraining=False):
 
         # First set
         conv1 = self.convolution(images,
@@ -206,6 +205,35 @@ class YOLONet:
                                   stride=[1, 1, 1, 1],
                                   name="conv20")
 
+        if pretraining:
+            pool5 = tf.layers.average_pooling2d(conv20,
+                                                pool_size=2,
+                                                strides=2,
+                                                padding="SAME",
+                                                name="pool5")
+
+            # Flatten pool5 tensor
+            pool5_f = tf.reshape(pool5, [BATCH_SIZE, -1])
+            n = pool5_f.get_shape()[1].value
+
+            fc0 = self.fully_connected(pool5_f,
+                                       shape_=[n, 4096],
+                                       name="fc0")
+
+            # Softmax layer
+            with tf.variable_scope('softmax') as scope:
+                weights = self._variable_with_weight_decay('weights',
+                                                           shape=[4096, 7 * 7 * 30],
+                                                           stddev=1 / 4096,
+                                                           wd=0.0)
+
+                biases = self._variable_on_cpu('biases', 7 * 7 * 30, tf.constant_initializer(0.0))
+
+                softmax = tf.add(tf.matmul(fc0, weights), biases, name=scope.name)
+
+            return softmax
+
+
         conv21 = self.convolution(conv20,
                                   filter_=[3, 3, 1024, 1024],
                                   stride=[1, 1, 1, 1],
@@ -227,21 +255,21 @@ class YOLONet:
                                   stride=[1, 1, 1, 1],
                                   name="conv24")
 
-        # Fully-connected layers
-        with tf.variable_scope('fc') as scope:
-            n = 4096
+        # Flatten conv24 tensor
+        conv24_f = tf.reshape(conv24, [BATCH_SIZE, -1])
+        n = conv24_f.get_shape()[1].value
 
-            reshape = tf.reshape(conv24, [BATCH_SIZE, -1])
-            dim = reshape.get_shape()[1].value
+        fc1 = self.fully_connected(conv24_f,
+                                   shape_=[n,n],
+                                   name="fc1")
 
-            weights = self._variable_with_weight_decay('weights',
-                                                       shape=[dim, 4096],
-                                                       stddev=0.04,
-                                                       wd=0.004)
+        # Flatten fc1 tensor
+        fc1_f = tf.reshape(fc1, [BATCH_SIZE, -1])
+        m = fc1_f.get_shape()[1].value
 
-            biases = self._variable_on_cpu('biases', [4096], tf.constant_initializer(0.1))
-
-            fc = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+        fc2 = self.fully_connected(fc1_f,
+                                   shape_=[m,4096],
+                                   name="fc2")
 
         # Softmax layer
         with tf.variable_scope('softmax') as scope:
@@ -252,12 +280,13 @@ class YOLONet:
 
             biases = self._variable_on_cpu('biases', 7 * 7 * 30, tf.constant_initializer(0.0))
 
-            softmax = tf.add(tf.matmul(fc, weights), biases, name=scope.name)
+            softmax = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
         return softmax
 
+
 def main():
-    x = tf.random_normal([2000, 224, 224, 3], mean=-1, stddev=4, dtype=tf.float32)
+    x = tf.random_normal([BATCH_SIZE, 448, 448, 3], mean=-1, stddev=4, dtype=tf.float32)
     YOLONet(x)
 
 if __name__ == '__main__':
