@@ -42,7 +42,7 @@ class YOLONet:
             Args: input, filter, stride, name, layer
             Returns: output layer
     '''
-    def convolution(self, input_, filter_, stride, name, padding='SAME'):
+    def convolution(self, input_, filter_, stride, name, padding='SAME', alpha=0.1):
         with tf.variable_scope(name) as scope:
             kernel = self._variable_with_weight_decay('weights',
                                                       shape=filter_,
@@ -53,8 +53,7 @@ class YOLONet:
                                       tf.constant_initializer(0.0))
             pre_activation = tf.nn.bias_add(conv, biases)
 
-            # TODO: Update TensorFlow and use tf.nn.leaky_relu(X, alpha=0.01) here
-            output = tf.nn.relu(pre_activation, name=scope.name)
+            output = tf.nn.leaky_relu(pre_activation, alpha=alpha, name=scope.name)
 
         return output
 
@@ -62,16 +61,23 @@ class YOLONet:
             Args: input, filter, stride, name, layer
             Returns: output layer
     '''
-    def fully_connected(self, input_, shape_, name):
+    def fully_connected(self, input_, shape_, name, alpha=0.1):
         with tf.variable_scope(name) as scope:
             weights = self._variable_with_weight_decay('weights', shape = shape_,
                                                                   stddev = 0.04,
                                                                   wd = 0.004)
             biases = self._variable_on_cpu('biases', shape_[-1], tf.constant_initializer(0.1))
 
-            fc = tf.nn.relu(tf.matmul(input_, weights) + biases, name=scope.name)
+            fc = tf.nn.leaky_relu(tf.matmul(input_, weights) + biases, alpha=alpha, name=scope.name)
 
             return fc
+
+    ''' Modified sum of squares cost function
+                Args: input, filter, stride, name, layer
+                Returns: output layer
+    '''
+    def cost_function(self):
+        pass
 
     # Construct our model
     def build(self, images, pretraining=False):
@@ -259,6 +265,7 @@ class YOLONet:
         conv24_f = tf.reshape(conv24, [BATCH_SIZE, -1])
         n = conv24_f.get_shape()[1].value
 
+        # First fully connected layer
         fc1 = self.fully_connected(conv24_f,
                                    shape_=[n,n],
                                    name="fc1")
@@ -267,11 +274,12 @@ class YOLONet:
         fc1_f = tf.reshape(fc1, [BATCH_SIZE, -1])
         m = fc1_f.get_shape()[1].value
 
+        # Second fully connected layer
         fc2 = self.fully_connected(fc1_f,
                                    shape_=[m,4096],
                                    name="fc2")
 
-        # Softmax layer
+        # Softmax output layer
         with tf.variable_scope('softmax') as scope:
             weights = self._variable_with_weight_decay('weights',
                                                        shape=[4096, 7 * 7 * 30],
