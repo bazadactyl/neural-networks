@@ -412,12 +412,12 @@ class YOLONet:
                                  stride=[1, 1, 1, 1],
                                  name="conv9")
 
-        # Flatten conv24 tensor
-        conv24_f = tf.reshape(conv9, [BATCH_SIZE, -1])
-        n = conv24_f.get_shape()[1].value
+        # Flatten conv9 tensor
+        conv9_f = tf.reshape(conv9, [BATCH_SIZE, -1])
+        n = conv9_f.get_shape()[1].value
 
         # First fully connected layer
-        fc1 = self.fully_connected(conv24_f,
+        fc1 = self.fully_connected(conv9_f,
                                    shape_=[n, n],
                                    name="fc1")
 
