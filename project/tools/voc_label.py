@@ -55,4 +55,3 @@ for year, image_set in sets:
         list_file.write('%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg\n'%(wd, year, image_id))
         convert_annotation(year, image_id)
     list_file.close()
-
