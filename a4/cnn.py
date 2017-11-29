@@ -32,7 +32,7 @@ def model(X, w_1, w_2, w_fc, w_o, p_keep_conv, p_keep_hidden):
                                  name="conv2"))
 
     l2 = tf.nn.max_pool(l2,
-                        ksize=[1, 2, 2, 1],
+                        ksize=[1, 3, 3, 1],
                         strides=[1, 2, 2, 1],
                         padding="SAME",
                         name="pool2")
