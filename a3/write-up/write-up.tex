@@ -296,23 +296,23 @@ Running the program will do the following:
 \begin{enumerate}
 	\def\labelenumi{\arabic{enumi}.}
 	\tightlist
-	\item Load the MNIST dataset using scikit-learn.
+	\item Load the MNIST dataset using scikit-learn then subsample to only include 1's and 5's.
 	\item Pick some random MNIST images to train with; quantity of images is user-defined using the \textbf{num\_training\_patterns} command-line parameter.
 	\item Initialize a Hopfield network.
 	\item Train the network using Storkey's learning rule.
-	\item Degrade each training image with 20\% noise (flip 20% of the bits).
+	\item Degrade each training image with 20\% noise \textit{(flip 20\% of the image's bits)}.
 	\item Test whether the network can restore the degraded images satisfactorily.
 	\item Print out the network's recovery accuracy.
 \end{enumerate}
 
-After the programs performs the above, it will display the following
+After the program performs the above, it will display the following
 visualizations:
 
 \begin{enumerate}
 	\def\labelenumi{\arabic{enumi}.}
 	\tightlist
 	\item The network's weights.
-	\item The network's state (the sum of each neuron's own weights).
+	\item The network's state \textit{(the sum of each neuron's own weights).}
 	\item A comparison between each original image, its degraded version, and its recovered version.
 \end{enumerate}
 
@@ -354,11 +354,11 @@ A few notes regarding our experiments:
 
 \begin{itemize}
 \item
-  to degrade our images, we applied 20\%, which means that a random 20\%
+  to degrade our images, we applied 20\% noise, which means that a random 20\%
   of the pattern's bits were flipped
 \item
   the threshold for a recovery being considered a success was the
-  follow: the L2-norm between the original MNIST image and the recovered
+  following: the L2-norm between the original MNIST image and the recovered
   image must be less than 10. We found this threshold only lets very
   good recoveries pass
 \end{itemize}
@@ -593,7 +593,7 @@ stable yet, we repeat for another iteration.
 
 \begin{figure}[h!]
 	\centering
-	\subfloat[Recovering a 5]{{\includegraphics[width=9cm]{../figures/q1/storkey-recovery-03.png} }}
+	\subfloat[Recovering a 1]{{\includegraphics[width=9cm]{../figures/q1/storkey-recovery-03.png} }}
 	\qquad
 	\subfloat[Recovering a 1]{{\includegraphics[width=9cm]{../figures/q1/storkey-recovery-04.png} }}
 	\caption{Recovering from a 9-image Storkey-trained network}
@@ -615,10 +615,10 @@ stable yet, we repeat for another iteration.
 
 \subsection{Network Visualizations}\label{network-visualizations}
 
-We visualized the Hopfield networks after being trained. We did this to
+We visualized our Hopfield networks after training them. We did this to
 get a better understanding of how the and Hebb and Storkey learning
-rules differ. We found that Hebb's rule produced a simpler,
-less-detailed network.
+rules affect the network. We found that Hebb's rule produced a simpler,
+less-detailed network; conversely, Storkey's rules produced a more nuanced network.
 \\
 
 You can see this in the diagrams that follow: in Hebb-trained networks,
@@ -677,7 +677,7 @@ Running the program will do the following:
 \begin{enumerate}
 	\tightlist
 	 \item Fetch MNIST data and retrieve the 1's and 5's; this will be our dataset.
-	 \item Initialize the SOM and train it on the entire dataset, in random order.
+	 \item Initialize the SOM and train it on a subset of the dataset from step 1, in random order without replacement.
 	 \item Test the clustering accuracy of the trained SOM and print out the value.
 	 \item Perform K-means clustering on the dataset reduced to 2 dimensions.
 	 \item Test the clustering accuracy of the K-means clustering and print out the value.
@@ -688,8 +688,8 @@ After the programs performs the above, it will display three visualizations:
 \begin{itemize}
 	\tightlist
 	\item The state of the SOM upon initialization.
-	\item The state of the SOM after training .
-	\item The K-means clustering of of the dataset.
+	\item The state of the SOM after training.
+	\item The K-means clustering of the dataset.
 \end{itemize}
 
 
@@ -757,7 +757,7 @@ visualizations after each training iteration to see how the SOM changes
 over time. We start off in the top left with random weights.
 \\
 
-We progressivly train with MNIST images until, at iteration 16 (bottom
+We progressively train with MNIST images until, at iteration 15 (bottom
 right) we have a clear partitioning of the map into two partitions.
 Training any more just makes the map dance around more, not improving
 the map very much.
@@ -816,7 +816,10 @@ be confident that our SOM is behaving correctly.
 We wanted to keep the comparison between SOM "clustering" and K-means
 clustering close, so we let \(k = 2\). After performing the K-means
 clustering, we were able to tell if each element was correctly clustered
-because we know the label for each MNIST image.
+because we know the label for each MNIST image. We performed PCA on the
+MNIST data to reduce it to 2 dimensions for visualization, as the
+assignment specification suggests. Note that our use of PCA involves performing SVD,
+which the assignment also suggested for this part of the assignment.
 \\
 
 This allowed us to
@@ -843,8 +846,8 @@ computed by the K-means algorithm.
 program needs. We had to create a separate Python 2.7 utility obtain
 this data because the scikit-learn tutorial requires PIL (an outdated,
 little-supported) to read the data. We had to compile PIL from source,
-so it's easier for us to include the data instead of making tou compile
-PIL and run yet another script.
+so it's easier for us to include the data instead of making you manually
+compile PIL and run \textit{yet} another script.
 \\
 
 We have provided an easy-to-use Makefile to help you run our program:
@@ -909,7 +912,7 @@ cross validation, along with the following hyper-parameters:
 \end{Verbatim}
 
 
-This yielded a classifier with 83.39\% averaged cross-validated
+This yielded a classifier with \textbf{83.39\%} averaged cross-validated
 accuracy.
 
 We then applied PCA to the data before training on it, again using
