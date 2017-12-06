@@ -3,8 +3,9 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 from keras.datasets import cifar10
 
-batch_size = 128
+batch_size = 64
 test_size = 256
+epochs = 200
 
 
 def init_weights(shape):
@@ -49,6 +50,24 @@ def model(X, w_1, w_2, w_fc, w_o, p_keep_conv, p_keep_hidden):
     return pyx
 
 
+# def model(X, w, w_fc, w_o, p_keep_conv, p_keep_hidden):
+#     l1a = tf.nn.relu(tf.nn.conv2d(X, w,                       # l1a shape=(?, 28, 28, 32)
+#                         strides=[1, 1, 1, 1], padding='SAME'))
+#     l1 = tf.nn.max_pool(l1a, ksize=[1, 2, 2, 1],              # l1 shape=(?, 14, 14, 32)
+#                         strides=[1, 2, 2, 1], padding='SAME')
+#     l1 = tf.nn.dropout(l1, p_keep_conv)
+#
+#
+#     l3 = tf.reshape(l1, [-1, w_fc.get_shape().as_list()[0]])    # reshape to (?, 14x14x32)
+#     l3 = tf.nn.dropout(l3, p_keep_conv)
+#
+#     l4 = tf.nn.relu(tf.matmul(l3, w_fc))
+#     l4 = tf.nn.dropout(l4, p_keep_hidden)
+#
+#     pyx = tf.matmul(l4, w_o)
+#     return pyx
+
+
 encoder = OneHotEncoder()
 (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 y_train = encoder.fit(y_train).transform(y_train).toarray()
@@ -70,24 +89,32 @@ cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=py_x, label
 train_op = tf.train.RMSPropOptimizer(0.0001, 0.9).minimize(cost)
 predict_op = tf.argmax(py_x, 1)
 
-# Launch the graph in a session
 with tf.Session() as sess:
-    # you need to initialize all variables
     tf.global_variables_initializer().run()
 
-    for i in range(100):
-        training_batch = zip(range(0, len(X_train), batch_size),
-                             range(batch_size, len(X_train) + 1, batch_size))
+    for i in range(epochs):
+        batch_starts = range(0, len(X_train), batch_size)
+        batch_ends = range(batch_size, len(X_train) + 1, batch_size)
+        training_batches = zip(batch_starts, batch_ends)
 
-        for start, end in training_batch:
-            sess.run(train_op, feed_dict={X: X_train[start:end], Y: y_train[start:end],
-                                          p_keep_conv: 0.6, p_keep_hidden: 0.9})
+        for start, end in training_batches:
+            sess.run(train_op, feed_dict={
+                X: X_train[start:end],
+                Y: y_train[start:end],
+                p_keep_conv: 0.6,
+                p_keep_hidden: 0.9,
+            })
 
-        test_indices = np.arange(len(X_test))  # Get A Test Batch
+        test_indices = np.arange(len(X_test))
         np.random.shuffle(test_indices)
         test_indices = test_indices[0:test_size]
 
-        print(("Epoch: %d" % i), np.mean(np.argmax(y_test[test_indices], axis=1) ==
-                         sess.run(predict_op, feed_dict={X: X_test[test_indices],
-                                                         p_keep_conv: 1.0,
-                                                         p_keep_hidden: 1.0})))
+        labels = np.argmax(y_test[test_indices], axis=1)
+        predictions = sess.run(predict_op, feed_dict={
+            X: X_test[test_indices],
+            p_keep_conv: 1.0,
+            p_keep_hidden: 1.0
+        })
+
+        accuracy = np.mean(labels == predictions)
+        print("Epoch: {}  Accuracy: {}".format(i + 1, accuracy))
