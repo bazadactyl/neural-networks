@@ -8,7 +8,7 @@ We studied neural networks and applied them to text recognition and face recogni
 
 We used neural networks to recognize numbers from the [MNIST dataset](https://en.wikipedia.org/wiki/MNIST_database).
 
-![Sample images from the MNIST dataset](https://en.wikipedia.org/wiki/MNIST_database#/media/File:MnistExamples.png)
+![Sample images from the MNIST dataset](https://upload.wikimedia.org/wikipedia/commons/2/27/MnistExamples.png)
 
 Check out the [write-up](a2/write-up.pdf).
 
