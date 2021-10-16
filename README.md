@@ -8,6 +8,8 @@ We studied neural networks and applied them to text recognition and face recogni
 
 We used neural networks to recognize numbers from the [MNIST dataset](https://en.wikipedia.org/wiki/MNIST_database).
 
+![Sample images from the MNIST dataset](https://en.wikipedia.org/wiki/MNIST_database#/media/File:MnistExamples.png)
+
 Check out the [write-up](a2/write-up.pdf).
 
 Our best model achieved an accuracy of 96%:
@@ -61,6 +63,8 @@ We then used [principal component analysis (PCA)](https://en.wikipedia.org/wiki/
 ## General Image Recognition
 
 Later in the course, we tackled the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset, which contains images of various animals and objects.
+
+![Sample images from the CIFAR-10 dataset](https://storage.googleapis.com/kaggle-competitions/kaggle/3649/media/cifar-10.png)
 
 We used [convolutional neural networks (CNNs)](https://en.wikipedia.org/wiki/Convolutional_neural_network) for this task.
 
