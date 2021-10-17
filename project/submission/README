@@ -1,0 +1,64 @@
+SECTION (0): Very Important Notes
+
+We could not include the entire Tiny ImageNet dataset into
+our submission because the TFRecords files are over 1GB in
+size. The data in our submissions a reduced version.
+
+------------------------------------------------------------
+
+SECTION (1): Requirements for Running Our Program
+
+To run our program, you will need to have Python 3 and the
+ubiquitous "virtualenv" installed on your system. Besides
+that, our Makefile will handle all other requirements.
+
+We have provided an easy-to-use Makefile to help you run our
+program.
+
+------------------------------------------------------------
+
+SECTION (2): Training a Tiny ImageNet Classifier from Scratch
+
+To train a new classifier, "cd" into our submission
+directory and execute the following commands:
+
+make prepare-venv
+source env/bin/activate
+python train.py &
+python evaluate.py &
+tensorboard --logdir=logs
+
+Then, open TensorBoard in your browser to monitor the
+classifier's accuracy as it is being trained. You can
+also monitor loss, mean-squared error, and other metrics.
+
+The commands above perform the following:
+
+1. Create a virtual environment with the required libraries.
+2. Enter the virtual environment.
+3. Initialize a new classifier and start training it.
+4. Repeatedly evaluate the classifier's accuracy so far.
+5. Start TensorBoard to monitor the classifier's accuracy.
+
+To KILL the processes you started, execute the following:
+
+CTRL-C
+fg
+CTRL-C
+fg
+CTRL-C
+
+------------------------------------------------------------
+
+SECTION (3): View Results from our Already-trained Model
+
+Before executing the commands below, make sure you have
+killed the processes from SECTION (2) using the instructions
+in SECTION (2). We also assume you following the already
+created the environment from SECTION (2).
+
+We provided metrics from our already-trained model for you
+to view in TensorBoard. To keep the file sizes low, we only
+trained for 1 hour. Please keep than in mind!
+
+tensorboard --logdir=trained-logs
