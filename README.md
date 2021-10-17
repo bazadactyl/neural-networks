@@ -8,9 +8,13 @@ This work was done by myself, Basim Ramadhan, and my partner Christian Abbott.
 
 For our end-of-course project, we aimed to classify images from the [Tiny Imagenet](https://paperswithcode.com/dataset/tiny-imagenet) dataset.
 
-![Sample images from Tiny Imagenet](https://production-media.paperswithcode.com/datasets/Tiny_ImageNet-0000001404-a53923c3_XCrVSGm.jpg)
+![Sample images from Tiny Imagenet](https://www.researchgate.net/profile/David-Vazquez/publication/310329534/figure/fig3/AS:428886312919043@1479265873883/Samples-from-hierarchical-PixelVAE-on-the-64x64-ImageNet-dataset.png)
 
 We referred to network structures and techniques use by [YOLO](https://arxiv.org/abs/1506.02640) and [AlexNet](https://en.wikipedia.org/wiki/AlexNet), and made derived simplified versions that we could run on a single GTX 970 GPU card.
+
+After plenty of troubleshooting, parameter tweaking and experimenting, we achieved a top-1 accuracy of 30%.
+
+Check out our [report here](project/submission/report.pdf).
 
 ## Text Recognition
 
