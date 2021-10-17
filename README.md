@@ -2,6 +2,16 @@
 
 We studied neural networks and applied them to text recognition and face recognition as part of the COMP4107 course at Carleton University.
 
+This work was done by myself, Basim Ramadhan, and my partner Christian Abbott.
+
+## General Image Recognition on Tiny Imagenet
+
+For our end-of-course project, we aimed to classify images from the [Tiny Imagenet](https://paperswithcode.com/dataset/tiny-imagenet) dataset.
+
+![Sample images from Tiny Imagenet](https://production-media.paperswithcode.com/datasets/Tiny_ImageNet-0000001404-a53923c3_XCrVSGm.jpg)
+
+We referred to network structures and techniques use by [YOLO](https://arxiv.org/abs/1506.02640) and [AlexNet](https://en.wikipedia.org/wiki/AlexNet), and made derived simplified versions that we could run on a single GTX 970 GPU card.
+
 ## Text Recognition
 
 ### Using feed-forward neural networks
@@ -60,7 +70,7 @@ We then used [principal component analysis (PCA)](https://en.wikipedia.org/wiki/
 
 ![Accuracy chart for face recognition](a3/figures/q3/pca-accuracy.png)
 
-## General Image Recognition
+## General Image Recognition on CIFAR-10
 
 Later in the course, we tackled the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset, which contains images of various animals and objects.
 
